@@ -1,0 +1,27 @@
+{
+  "name": "selectel-storage-promise",
+  "version": "1.0.0",
+  "description": "Manage Selectel's storage",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --harmony app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrey-aleshkov/selectel-storage-promise.git"
+  },
+  "keywords": [
+    "Selectel",
+    "cloud"
+  ],
+  "author": "Andrey Aleshkov",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/andrey-aleshkov/selectel-storage-promise/issues"
+  },
+  "homepage": "https://github.com/andrey-aleshkov/selectel-storage-promise#readme",
+  "dependencies": {
+    "request": "^2.79.0",
+    "request-promise-native": "^1.0.3"
+  }
+}
