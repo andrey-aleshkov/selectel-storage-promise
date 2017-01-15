@@ -4,7 +4,8 @@
   "description": "Manage Selectel's storage",
   "main": "index.js",
   "scripts": {
-    "start": "node --harmony app.js"
+    "start": "node --harmony app.js",
+    "test": "node ./node_modules/mocha/bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -25,9 +26,8 @@
     "request-promise-native": "^1.0.3"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
     "request-debug": "^0.2.0"
-  },
-  "optionalDependencies": {
-    "eslint-config-rambler": "~0.1.0"
   }
 }
