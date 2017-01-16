@@ -1,24 +1,13 @@
 var expect = require('chai').expect;
 var selectel = require('../index');
 var fs = require('fs');
+var targz = require('tar.gz');
 
-//var mochaAsync = (fn) => {
-//  return async (done) => {
-//    try {
-//      await fn();
-//      done();
-//    } catch (err) {
-//      done(err);
-//    }
-//  };
-//};
-
-selectel.setConf('', '');
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 describe('Storage', function() {
   it('auth', async () => {
-    var response = await selectel.auth();
+    var response = await selectel.auth('your login', 'your pass');
     expect(response.statusCode).to.equal(204);
   });
 
@@ -35,7 +24,7 @@ describe('Containers', function() {
   });
 
   it('createContainer', async () => {
-    var response = await selectel.createContainer('mocha', 'public');
+    var response = await selectel.createContainer('mocha', 'private');
     expect(response.statusCode).to.equal(201);
   });
 
@@ -43,10 +32,11 @@ describe('Containers', function() {
     var response = await selectel.infoContainer('mocha');
     expect(response.statusCode).to.equal(204);
   });
-  //it('editContainer', async () => {
-  //  var response = await selectel.editContainer('mocha', 'private');
-  //  expect(response.statusCode).to.equal(202);
-  //});
+
+  it('editContainer', async () => {
+    var response = await selectel.editContainer('mocha', 'public');
+    expect(response.statusCode).to.equal(202);
+  });
 });
 
 describe('Files', function() {
@@ -63,9 +53,19 @@ describe('Files', function() {
   });
 
   it('extractArchive', async () => {
-    var read = fs.createReadStream(__dirname + '/files/archive.tar.gz');
-    var response = await selectel.extractArchive(read, '/files/archive', 'tar.gz');
-    expect(response.statusCode).to.equal(200);
+    var read = targz({}, { fromBase: true }).createReadStream(__dirname + '/files');
+    var response = await selectel.extractArchive(read, '/mocha', 'tar.gz');
+    expect(response.statusCode).to.equal(201);
+  }).timeout(10000);
+
+  it('copyFile', async () => {
+    var response = await selectel.copyFile('/mocha/file.jpg', '/mocha/file-copy.jpg');
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('deleteFile', async () => {
+    var response = await selectel.deleteFile('/mocha/file.jpg');
+    expect(response.statusCode).to.equal(204);
   });
 });
 

@@ -5,24 +5,9 @@ var requestPromiseWithFullResponse = requestPromise.defaults({
 });
 var fs = require('fs');
 
-var Conf = {
-  login: null,
-  pass: null
-};
-
- var selAuthData = {
-  x_expire_auth_token: null,
-  x_storage_url: null,
-  x_auth_token: null,
-  is_authorized: false
- };
-
-//var selAuthData = {
-//  x_expire_auth_token: 82470,
-//  x_storage_url: 'https://190111.selcdn.ru/',
-//  x_auth_token: 'b5c7cd90ae14c4d65fd886a36669b5f2',
-//  is_authorized: true
-//};
+var storageUrl;
+var authToken;
+var expireAuthToken;
 
 var copyHeaders = function(req, headers) {
   var fieldName;
@@ -36,34 +21,23 @@ var copyHeaders = function(req, headers) {
 };
 
 // debug
-
-require('request-debug')(request);
+// require('request-debug')(request);
 
 // exports
 
-exports.setConf = function(login, pass) {
-  Conf.login = login;
-  Conf.pass = pass;
-  return Conf;
-};
-
-exports.auth = function() {
+exports.auth = function(login, pass) {
   return new Promise((resolve, reject) => {
     requestPromiseWithFullResponse({
       url: 'https://auth.selcdn.ru/',
       headers: {
-        'X-Auth-User': Conf.login,
-        'X-Auth-Key': Conf.pass
+        'X-Auth-User': login,
+        'X-Auth-Key': pass
       }
     })
       .then((response) => {
-        //if (response.statusCode === 204) {
-        //}
-        //console.log('selAuth', response);
-        selAuthData.x_expire_auth_token = ((parseInt(response.headers['x-expire-auth-token'], 10) * 1000) + Date.now());
-        selAuthData.x_storage_url = response.headers['x-storage-url'];
-        selAuthData.x_auth_token = response.headers['x-auth-token'];
-        selAuthData.is_authorized = true;
+        expireAuthToken = ((parseInt(response.headers['x-expire-auth-token'], 10) * 1000) + Date.now());
+        storageUrl = response.headers['x-storage-url'];
+        authToken = response.headers['x-auth-token'];
         resolve({
           statusCode: response.statusCode
         });
@@ -78,10 +52,10 @@ exports.auth = function() {
 
 exports.info = function() {
   return requestPromiseWithFullResponse({
-    url: selAuthData.x_storage_url,
+    url: storageUrl,
     method: 'HEAD',
     headers: {
-      'X-Auth-Token': selAuthData.x_auth_token
+      'X-Auth-Token': authToken
     }
   });
   // 204 - ОК
@@ -99,22 +73,21 @@ exports.fetchContainers = function(format, limit, marker) {
   }
 
   return requestPromiseWithFullResponse({
-    url: selAuthData.x_storage_url + urlData,
+    url: storageUrl + urlData,
     method: 'GET',
     headers: {
-      'X-Auth-Token': selAuthData.x_auth_token
+      'X-Auth-Token': authToken
     }
   });
   // 200 - ОК
 };
 
 exports.createContainer = function(containerName, type) {
-  console.log(selAuthData.x_storage_url + containerName);
   return requestPromiseWithFullResponse({
-    url: selAuthData.x_storage_url + containerName,
+    url: storageUrl + containerName,
     method: 'PUT',
     headers: {
-      'X-Auth-Token': selAuthData.x_auth_token,
+      'X-Auth-Token': authToken,
       'X-Container-Meta-Type': type // public, private, gallery
     }
   });
@@ -124,10 +97,10 @@ exports.createContainer = function(containerName, type) {
 
 exports.infoContainer = function(containerName) {
   return requestPromiseWithFullResponse({
-    url: selAuthData.x_storage_url + containerName,
+    url: storageUrl + containerName,
     method: 'HEAD',
     headers: {
-      'X-Auth-Token': selAuthData.x_auth_token
+      'X-Auth-Token': authToken
     }
   });
   // 204 - ОК
@@ -135,10 +108,10 @@ exports.infoContainer = function(containerName) {
 
 exports.editContainer = function(containerName, type) {
   return requestPromiseWithFullResponse({
-    url: selAuthData.x_storage_url + containerName,
+    url: storageUrl + containerName,
     method: 'POST',
     headers: {
-      'X-Auth-Token': selAuthData.x_auth_token,
+      'X-Auth-Token': authToken,
       'X-Container-Meta-Type': type // public, private, gallery
     }
   });
@@ -148,10 +121,10 @@ exports.editContainer = function(containerName, type) {
 
 exports.deleteContainer = function(containerName) {
   return requestPromiseWithFullResponse({
-    url: selAuthData.x_storage_url + containerName,
+    url: storageUrl + containerName,
     method: 'DELETE',
     headers: {
-      'X-Auth-Token': selAuthData.x_auth_token
+      'X-Auth-Token': authToken
     }
   });
   // 204 (No Content) - при успешном удалении
@@ -179,10 +152,10 @@ exports.fetchFiles = function(containerName, data) {
   }
 
   return requestPromiseWithFullResponse({
-    url: selAuthData.x_storage_url + urlData,
+    url: storageUrl + urlData,
     method: 'GET',
     headers: {
-      'X-Auth-Token': selAuthData.x_auth_token
+      'X-Auth-Token': authToken
     }
   });
   // 200 - ОК
@@ -197,10 +170,10 @@ exports.uploadFile = function(fullLocalPath, hostingPath, additionalHeaders) {
         reject(fsErr);
       } else {
         options = {
-          url: selAuthData.x_storage_url + hostingPath,
+          url: storageUrl + hostingPath,
           method: 'PUT',
           headers: {
-            'X-Auth-Token': selAuthData.x_auth_token,
+            'X-Auth-Token': authToken,
             'Content-Length': fs.statSync(fullLocalPath).size
           },
           body: data
@@ -224,54 +197,45 @@ exports.uploadFile = function(fullLocalPath, hostingPath, additionalHeaders) {
 exports.extractArchive = function(readStream, hostingPath, arhFormat) {
   var options = {
     method: 'PUT',
-    url: selAuthData.x_storage_url + hostingPath + '?extract-archive=' + arhFormat,
+    url: storageUrl + hostingPath + '?extract-archive=' + arhFormat,
     headers: {
-      'X-Auth-Token': selAuthData.x_auth_token,
+      'X-Auth-Token': authToken,
       'Accept': 'application/json'
     }
   };
 
   return new Promise((resolve, reject) => {
     readStream
-      .pipe(request(options, (err, data) => {
-        if (err || !data) {
+      .pipe(request(options, (err, response) => {
+        if (err || !response) {
           reject(err);
         } else {
-          if (data.statusCode === 200) {
-            resolve(data.body);
-          } else {
-            resolve(data.body);
-            // TODO: handle this
-            //reject(err);
-          }
+          resolve(response);
         }
-      }))
-      //.on('finish', () => { resolve(true); }) // TODO: think about it
-      .on('error', (err) => { reject(err); });
+      }));
   });
-  // 200 - ОК
+  // 201 - ОК
 };
 
-exports.copyFile = function(hostingPath, newPath, additionalHeaders) {
-  var req = {
-    url: selAuthData.x_storage_url + hostingPath,
+exports.copyFile = function(hostingPath, newPath) {
+  return requestPromiseWithFullResponse({
+    url: storageUrl + hostingPath,
     method: 'COPY',
     headers: {
-      'X-Auth-Token': selAuthData.x_auth_token,
+      'X-Auth-Token': authToken,
       'Destination': newPath
     }
-  };
-  copyHeaders(req, additionalHeaders);
-
-  return requestPromise(req);
+  });
   // 201 - ОК
 };
 
 exports.deleteFile = function(filePath) {
-  return requestPromise({
-    url: selAuthData.x_storage_url + filePath,
+  return requestPromiseWithFullResponse({
+    url: storageUrl + filePath,
     method: 'DELETE',
-    headers: {'X-Auth-Token': selAuthData.x_auth_token}
+    headers: {
+      'X-Auth-Token': authToken
+    }
   });
   // 204 - ОК
 };
