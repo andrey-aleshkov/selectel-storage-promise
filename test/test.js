@@ -7,7 +7,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 describe('Storage', function() {
   it('auth', async () => {
-    var response = await selectel.auth('your login', 'your pass');
+    var response = await selectel.auth(process.env.SELECTEL_LOGIN, process.env.SELECTEL_PASS);
     expect(response.statusCode).to.equal(204);
   });
 
