@@ -8,7 +8,7 @@ Manage Selectel's storage
 
     npm install selectel-storage-promise --save
 
-## Using
+## Usage
 
     var selectel = require('selectel-storage-promise');
     
