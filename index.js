@@ -1,5 +1,6 @@
 var request = require('request');
 var requestPromise = require('request-promise-native');
+// TODO: rename requestPromiseWithFullResponse to api
 var requestPromiseWithFullResponse = requestPromise.defaults({
   resolveWithFullResponse: true
 });
