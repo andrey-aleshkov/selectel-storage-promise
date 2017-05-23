@@ -21,12 +21,13 @@
   },
   "homepage": "https://github.com/andrey-aleshkov/selectel-storage-promise#readme",
   "dependencies": {
-    "request": "^2.79.0",
-    "request-promise-native": "^1.0.3"
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.4"
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^3.2.0",
+    "eslint-config-rambler": "^0.3.0",
+    "mocha": "^3.4.1",
     "request-debug": "^0.2.0",
     "tar.gz": "^1.0.5"
   }
