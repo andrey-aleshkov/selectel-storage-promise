@@ -1,6 +1,5 @@
 const expect = require('chai').expect;
 const selectel = require('../index');
-const fs = require('fs');
 const targz = require('tar.gz');
 
 const containerName = 'mocha';
