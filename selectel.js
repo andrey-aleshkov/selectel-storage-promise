@@ -1,3 +1,8 @@
+/** @module selectel */
+/**
+ * @see {@link https://support.selectel.ru/storage/api_info/} Selectel's Documentation.
+ */
+
 var request = require('request');
 var requestPromise = require('request-promise-native');
 var requestPromiseWithFullResponse = requestPromise.defaults({
@@ -24,6 +29,10 @@ var copyHeaders = function(req, headers) {
 // require('request-debug')(request);
 
 // exports
+
+/**
+ * @interface
+ */
 
 /**
  * Gets the authentication token (key) for accessing storage and sets it internally.
