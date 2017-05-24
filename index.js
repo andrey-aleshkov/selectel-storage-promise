@@ -26,6 +26,13 @@ var copyHeaders = function(req, headers) {
 
 // exports
 
+/**
+ * Authentication. Set the authentication token (key) for accessing storage via API
+ * which must to be included in all subsequent requests.
+ * @param {string} login - account number
+ * @param {string} pass - storage password
+ * @returns {Promise}
+ */
 exports.auth = function(login, pass) {
   return new Promise((resolve, reject) => {
     requestPromiseWithFullResponse({
@@ -51,6 +58,11 @@ exports.auth = function(login, pass) {
   // 403 - Forbidden
 };
 
+/**
+ * Retrieving account information. Returns general information about account:
+ * total number of containers, total number of objects, total volume of data stored, total volume of data downloaded.
+ * @returns {Promise}
+ */
 exports.info = function() {
   return requestPromiseWithFullResponse({
     url: storageUrl,
@@ -62,6 +74,13 @@ exports.info = function() {
   // 204 - ОК
 };
 
+/**
+ * Retrieving containers list. Returns the list of available containers.
+ * @param {string} format - 'json' or 'xml'
+ * @param {string} limit - the maximum number of objects on a list (default - 10 000)
+ * @param {string} marker - the name of the final container from the previous request
+ * @returns {Promise}
+ */
 exports.fetchContainers = function(format, limit, marker) {
   // TODO: make default values
   var urlData = '?format=' + format;
@@ -83,6 +102,12 @@ exports.fetchContainers = function(format, limit, marker) {
   // 200 - ОК
 };
 
+/**
+ * Creating a new container.
+ * @param {string} containerName - name of the container
+ * @param {string} type - container type: 'public', 'private' or 'gallery'
+ * @returns {Promise}
+ */
 exports.createContainer = function(containerName, type) {
   return requestPromiseWithFullResponse({
     url: storageUrl + containerName,
@@ -96,6 +121,11 @@ exports.createContainer = function(containerName, type) {
   // 202 (Accepted) - если контейнер уже существует
 };
 
+/**
+ * Retrieving container information.
+ * @param {string} containerName - name of the container
+ * @returns {Promise}
+ */
 exports.infoContainer = function(containerName) {
   return requestPromiseWithFullResponse({
     url: storageUrl + containerName,
@@ -107,6 +137,12 @@ exports.infoContainer = function(containerName) {
   // 204 - ОК
 };
 
+/**
+ * Changing container metadata.
+ * @param {string} containerName - name of the container
+ * @param {string} type - container type: 'public', 'private' or 'gallery'
+ * @returns {Promise}
+ */
 exports.editContainer = function(containerName, type) {
   return requestPromiseWithFullResponse({
     url: storageUrl + containerName,
@@ -120,6 +156,11 @@ exports.editContainer = function(containerName, type) {
   // 404 (Not Found) - указанный контейнер не существует
 };
 
+/**
+ * Deleting a container.
+ * @param {string} containerName - name of the container
+ * @returns {Promise}
+ */
 exports.deleteContainer = function(containerName) {
   return requestPromiseWithFullResponse({
     url: storageUrl + containerName,
@@ -133,6 +174,17 @@ exports.deleteContainer = function(containerName) {
   // 409 (Conflict) - ошибка удаления, контейнер не пустой
 };
 
+/**
+ * Retrieving a list of files saved in a container.
+ * @param {string} containerName - name of the container
+ * @param {string} format - the format results are returned in (json or xml)
+ * @param {string} limit - the maximum number of objects on a list (default - 10 000)
+ * @param {string} marker - objects whose value exceeds the given marker (useful for page navigation and for large numbers of files)
+ * @param {string} prefix - prints objects whose names start with the given prefix in line format
+ * @param {string} path - returns objects in the given folder (virtual folder)
+ * @param {string} delimiter - returns objects up to the given delimiter in the filename
+ * @returns {Promise}
+ */
 exports.fetchFiles = function(containerName, data) {
   var urlData = containerName + '?format=' + data.format;
 
@@ -162,6 +214,13 @@ exports.fetchFiles = function(containerName, data) {
   // 200 - ОК
 };
 
+/**
+ * Uploads a file to the container.
+ * @param {string} fullLocalPath - full local path to the file
+ * @param {string} hostingPath - /{container}/{file}
+ * @param {Object} additionalHeaders - { X-Delete-At: ..., X-Delete-After: ..., Etag: ..., X-Object-Meta: ... }
+ * @returns {Promise}
+ */
 exports.uploadFile = function(fullLocalPath, hostingPath, additionalHeaders) {
   return new Promise((resolve, reject) => {
     fs.readFile(fullLocalPath, (fsErr, data) => {
@@ -195,6 +254,13 @@ exports.uploadFile = function(fullLocalPath, hostingPath, additionalHeaders) {
   // 201 - ОК
 };
 
+/**
+ * Extracts the archive in the request. The archive type is given in the extract-archive parameter (tar, tar.gz or tar.bz2).
+ * @param {pipe} readStream - read stream
+ * @param {string} hostingPath - /{container}/{file}
+ * @param {string} arhFormat - The archive type: 'tar', 'tar.gz' or 'tar.bz2'
+ * @returns {Promise}
+ */
 exports.extractArchive = function(readStream, hostingPath, arhFormat) {
   var options = {
     method: 'PUT',
@@ -218,6 +284,12 @@ exports.extractArchive = function(readStream, hostingPath, arhFormat) {
   // 201 - ОК
 };
 
+/**
+ * Copies a file to the given folder.
+ * @param {string} hostingPath - /{container}/{file}
+ * @param {string} newPath - /{container}/{new-file}
+ * @returns {Promise}
+ */
 exports.copyFile = function(hostingPath, newPath) {
   return requestPromiseWithFullResponse({
     url: storageUrl + hostingPath,
@@ -230,6 +302,11 @@ exports.copyFile = function(hostingPath, newPath) {
   // 201 - ОК
 };
 
+/**
+ * Deletes the given file.
+ * @param {string} filePath - /{container}/{file}
+ * @returns {Promise}
+ */
 exports.deleteFile = function(filePath) {
   return requestPromiseWithFullResponse({
     url: storageUrl + filePath,

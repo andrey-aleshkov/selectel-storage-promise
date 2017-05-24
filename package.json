@@ -4,7 +4,8 @@
   "description": "Manage Selectel's storage",
   "main": "index.js",
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha"
+    "test": "node ./node_modules/mocha/bin/mocha",
+    "docs": "jsdoc2md index.js > README.md"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "eslint-config-rambler": "^0.3.0",
+    "jsdoc-to-markdown": "^3.0.0",
     "mocha": "^3.4.1",
     "request-debug": "^0.2.0",
     "tar.gz": "^1.0.5"
