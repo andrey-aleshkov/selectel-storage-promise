@@ -1,6 +1,5 @@
 var request = require('request');
 var requestPromise = require('request-promise-native');
-// TODO: rename requestPromiseWithFullResponse to api
 var requestPromiseWithFullResponse = requestPromise.defaults({
   resolveWithFullResponse: true
 });
@@ -27,8 +26,7 @@ var copyHeaders = function(req, headers) {
 // exports
 
 /**
- * Authentication. Set the authentication token (key) for accessing storage via API
- * which must to be included in all subsequent requests.
+ * Gets the authentication token (key) for accessing storage and sets it internally.
  * @param {string} login - account number
  * @param {string} pass - storage password
  * @returns {Promise}
@@ -59,8 +57,8 @@ exports.auth = function(login, pass) {
 };
 
 /**
- * Retrieving account information. Returns general information about account:
- * total number of containers, total number of objects, total volume of data stored, total volume of data downloaded.
+ * Returns general information about account: total number of containers, total number of objects,
+ * total volume of data stored, total volume of data downloaded.
  * @returns {Promise}
  */
 exports.info = function() {
@@ -75,7 +73,7 @@ exports.info = function() {
 };
 
 /**
- * Retrieving containers list. Returns the list of available containers.
+ * Returns the list of available containers.
  * @param {string} format - 'json' or 'xml'
  * @param {string} limit - the maximum number of objects on a list (default - 10 000)
  * @param {string} marker - the name of the final container from the previous request
@@ -103,18 +101,18 @@ exports.fetchContainers = function(format, limit, marker) {
 };
 
 /**
- * Creating a new container.
+ * Creates a new container.
  * @param {string} containerName - name of the container
- * @param {string} type - container type: 'public', 'private' or 'gallery'
+ * @param {string} containerType - container type: 'public', 'private' or 'gallery'
  * @returns {Promise}
  */
-exports.createContainer = function(containerName, type) {
+exports.createContainer = function(containerName, containerType) {
   return requestPromiseWithFullResponse({
     url: storageUrl + containerName,
     method: 'PUT',
     headers: {
       'X-Auth-Token': authToken,
-      'X-Container-Meta-Type': type // public, private, gallery
+      'X-Container-Meta-Type': containerType // public, private, gallery
     }
   });
   // 201 (Created) - при успешном создании
@@ -122,7 +120,7 @@ exports.createContainer = function(containerName, type) {
 };
 
 /**
- * Retrieving container information.
+ * Returns a container's information.
  * @param {string} containerName - name of the container
  * @returns {Promise}
  */
@@ -138,18 +136,18 @@ exports.infoContainer = function(containerName) {
 };
 
 /**
- * Changing container metadata.
+ * Changes a container’s metadata.
  * @param {string} containerName - name of the container
- * @param {string} type - container type: 'public', 'private' or 'gallery'
+ * @param {string} containerType - container type: 'public', 'private' or 'gallery'
  * @returns {Promise}
  */
-exports.editContainer = function(containerName, type) {
+exports.editContainer = function(containerName, containerType) {
   return requestPromiseWithFullResponse({
     url: storageUrl + containerName,
     method: 'POST',
     headers: {
       'X-Auth-Token': authToken,
-      'X-Container-Meta-Type': type // public, private, gallery
+      'X-Container-Meta-Type': containerType // public, private, gallery
     }
   });
   // 202 (Accepted) - изменение выполнено
@@ -157,7 +155,7 @@ exports.editContainer = function(containerName, type) {
 };
 
 /**
- * Deleting a container.
+ * Deletes the container.
  * @param {string} containerName - name of the container
  * @returns {Promise}
  */
@@ -175,33 +173,34 @@ exports.deleteContainer = function(containerName) {
 };
 
 /**
- * Retrieving a list of files saved in a container.
+ * Returns a list of files stored in the container.
  * @param {string} containerName - name of the container
- * @param {string} format - the format results are returned in (json or xml)
- * @param {string} limit - the maximum number of objects on a list (default - 10 000)
- * @param {string} marker - objects whose value exceeds the given marker (useful for page navigation and for large numbers of files)
- * @param {string} prefix - prints objects whose names start with the given prefix in line format
- * @param {string} path - returns objects in the given folder (virtual folder)
- * @param {string} delimiter - returns objects up to the given delimiter in the filename
+ * @param {Object} params - parameters.
+ * @param {string} params.format - the format results are returned in (json or xml)
+ * @param {string} params.limit - the maximum number of objects on a list (default - 10 000)
+ * @param {string} params.marker - objects whose value exceeds the given marker (useful for page navigation and for large numbers of files)
+ * @param {string} params.prefix - prints objects whose names start with the given prefix in line format
+ * @param {string} params.path - returns objects in the given folder (virtual folder)
+ * @param {string} params.delimiter - returns objects up to the given delimiter in the filename
  * @returns {Promise}
  */
-exports.fetchFiles = function(containerName, data) {
-  var urlData = containerName + '?format=' + data.format;
+exports.fetchFiles = function(containerName, params) {
+  var urlData = containerName + '?format=' + params.format;
 
-  if (data.limit) {
-    urlData += '&limit=' + data.limit;
+  if (params.limit) {
+    urlData += '&limit=' + params.limit;
   }
-  if (data.marker) {
-    urlData += '&marker=' + data.marker;
+  if (params.marker) {
+    urlData += '&marker=' + params.marker;
   }
-  if (data.prefix) {
-    urlData += '&prefix=' + data.prefix;
+  if (params.prefix) {
+    urlData += '&prefix=' + params.prefix;
   }
-  if (data.path) {
-    urlData += '&path=' + data.path;
+  if (params.path) {
+    urlData += '&path=' + params.path;
   }
-  if (data.delimiter) {
-    urlData += '&delimiter=' + data.delimiter;
+  if (params.delimiter) {
+    urlData += '&delimiter=' + params.delimiter;
   }
 
   return requestPromiseWithFullResponse({
@@ -255,7 +254,7 @@ exports.uploadFile = function(fullLocalPath, hostingPath, additionalHeaders) {
 };
 
 /**
- * Extracts the archive in the request. The archive type is given in the extract-archive parameter (tar, tar.gz or tar.bz2).
+ * Extracts the archive.
  * @param {pipe} readStream - read stream
  * @param {string} hostingPath - /{container}/{file}
  * @param {string} arhFormat - The archive type: 'tar', 'tar.gz' or 'tar.bz2'

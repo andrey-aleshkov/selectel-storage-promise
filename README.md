@@ -2,36 +2,35 @@
 
 <dl>
 <dt><a href="#auth">auth(login, pass)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Authentication. Set the authentication token (key) for accessing storage via API
-which must to be included in all subsequent requests.</p>
+<dd><p>Gets the authentication token (key) for accessing storage and sets it internally.</p>
 </dd>
 <dt><a href="#info">info()</a> ⇒ <code>Promise</code></dt>
-<dd><p>Retrieving account information. Returns general information about account:
-total number of containers, total number of objects, total volume of data stored, total volume of data downloaded.</p>
+<dd><p>Returns general information about account: total number of containers, total number of objects,
+total volume of data stored, total volume of data downloaded.</p>
 </dd>
 <dt><a href="#fetchContainers">fetchContainers(format, limit, marker)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Retrieving containers list. Returns the list of available containers.</p>
+<dd><p>Returns the list of available containers.</p>
 </dd>
-<dt><a href="#createContainer">createContainer(containerName, type)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Creating a new container.</p>
+<dt><a href="#createContainer">createContainer(containerName, containerType)</a> ⇒ <code>Promise</code></dt>
+<dd><p>Creates a new container.</p>
 </dd>
 <dt><a href="#infoContainer">infoContainer(containerName)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Retrieving container information.</p>
+<dd><p>Returns a container&#39;s information.</p>
 </dd>
-<dt><a href="#editContainer">editContainer(containerName, type)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Changing container metadata.</p>
+<dt><a href="#editContainer">editContainer(containerName, containerType)</a> ⇒ <code>Promise</code></dt>
+<dd><p>Changes a container’s metadata.</p>
 </dd>
 <dt><a href="#deleteContainer">deleteContainer(containerName)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Deleting a container.</p>
+<dd><p>Deletes the container.</p>
 </dd>
-<dt><a href="#fetchFiles">fetchFiles(containerName, format, limit, marker, prefix, path, delimiter)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Retrieving a list of files saved in a container.</p>
+<dt><a href="#fetchFiles">fetchFiles(containerName, params)</a> ⇒ <code>Promise</code></dt>
+<dd><p>Returns a list of files stored in the container.</p>
 </dd>
 <dt><a href="#uploadFile">uploadFile(fullLocalPath, hostingPath, additionalHeaders)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Uploads a file to the container.</p>
 </dd>
 <dt><a href="#extractArchive">extractArchive(readStream, hostingPath, arhFormat)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Extracts the archive in the request. The archive type is given in the extract-archive parameter (tar, tar.gz or tar.bz2).</p>
+<dd><p>Extracts the archive.</p>
 </dd>
 <dt><a href="#copyFile">copyFile(hostingPath, newPath)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Copies a file to the given folder.</p>
@@ -44,8 +43,7 @@ total number of containers, total number of objects, total volume of data stored
 <a name="auth"></a>
 
 ## auth(login, pass) ⇒ <code>Promise</code>
-Authentication. Set the authentication token (key) for accessing storage via API
-which must to be included in all subsequent requests.
+Gets the authentication token (key) for accessing storage and sets it internally.
 
 **Kind**: global function  
 
@@ -57,14 +55,14 @@ which must to be included in all subsequent requests.
 <a name="info"></a>
 
 ## info() ⇒ <code>Promise</code>
-Retrieving account information. Returns general information about account:
-total number of containers, total number of objects, total volume of data stored, total volume of data downloaded.
+Returns general information about account: total number of containers, total number of objects,
+total volume of data stored, total volume of data downloaded.
 
 **Kind**: global function  
 <a name="fetchContainers"></a>
 
 ## fetchContainers(format, limit, marker) ⇒ <code>Promise</code>
-Retrieving containers list. Returns the list of available containers.
+Returns the list of available containers.
 
 **Kind**: global function  
 
@@ -76,20 +74,20 @@ Retrieving containers list. Returns the list of available containers.
 
 <a name="createContainer"></a>
 
-## createContainer(containerName, type) ⇒ <code>Promise</code>
-Creating a new container.
+## createContainer(containerName, containerType) ⇒ <code>Promise</code>
+Creates a new container.
 
 **Kind**: global function  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | containerName | <code>string</code> | name of the container |
-| type | <code>string</code> | container type: 'public', 'private' or 'gallery' |
+| containerType | <code>string</code> | container type: 'public', 'private' or 'gallery' |
 
 <a name="infoContainer"></a>
 
 ## infoContainer(containerName) ⇒ <code>Promise</code>
-Retrieving container information.
+Returns a container's information.
 
 **Kind**: global function  
 
@@ -99,20 +97,20 @@ Retrieving container information.
 
 <a name="editContainer"></a>
 
-## editContainer(containerName, type) ⇒ <code>Promise</code>
-Changing container metadata.
+## editContainer(containerName, containerType) ⇒ <code>Promise</code>
+Changes a container’s metadata.
 
 **Kind**: global function  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | containerName | <code>string</code> | name of the container |
-| type | <code>string</code> | container type: 'public', 'private' or 'gallery' |
+| containerType | <code>string</code> | container type: 'public', 'private' or 'gallery' |
 
 <a name="deleteContainer"></a>
 
 ## deleteContainer(containerName) ⇒ <code>Promise</code>
-Deleting a container.
+Deletes the container.
 
 **Kind**: global function  
 
@@ -122,20 +120,21 @@ Deleting a container.
 
 <a name="fetchFiles"></a>
 
-## fetchFiles(containerName, format, limit, marker, prefix, path, delimiter) ⇒ <code>Promise</code>
-Retrieving a list of files saved in a container.
+## fetchFiles(containerName, params) ⇒ <code>Promise</code>
+Returns a list of files stored in the container.
 
 **Kind**: global function  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | containerName | <code>string</code> | name of the container |
-| format | <code>string</code> | the format results are returned in (json or xml) |
-| limit | <code>string</code> | the maximum number of objects on a list (default - 10 000) |
-| marker | <code>string</code> | objects whose value exceeds the given marker (useful for page navigation and for large numbers of files) |
-| prefix | <code>string</code> | prints objects whose names start with the given prefix in line format |
-| path | <code>string</code> | returns objects in the given folder (virtual folder) |
-| delimiter | <code>string</code> | returns objects up to the given delimiter in the filename |
+| params | <code>Object</code> | parameters. |
+| params.format | <code>string</code> | the format results are returned in (json or xml) |
+| params.limit | <code>string</code> | the maximum number of objects on a list (default - 10 000) |
+| params.marker | <code>string</code> | objects whose value exceeds the given marker (useful for page navigation and for large numbers of files) |
+| params.prefix | <code>string</code> | prints objects whose names start with the given prefix in line format |
+| params.path | <code>string</code> | returns objects in the given folder (virtual folder) |
+| params.delimiter | <code>string</code> | returns objects up to the given delimiter in the filename |
 
 <a name="uploadFile"></a>
 
@@ -153,7 +152,7 @@ Uploads a file to the container.
 <a name="extractArchive"></a>
 
 ## extractArchive(readStream, hostingPath, arhFormat) ⇒ <code>Promise</code>
-Extracts the archive in the request. The archive type is given in the extract-archive parameter (tar, tar.gz or tar.bz2).
+Extracts the archive.
 
 **Kind**: global function  
 
