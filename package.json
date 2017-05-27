@@ -2,10 +2,10 @@
   "name": "selectel-storage-promise",
   "version": "1.0.2",
   "description": "Manage Selectel's storage",
-  "main": "selectel.js",
+  "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha",
-    "docs": "jsdoc2md selectel.js > README.md"
+    "docs": "jsdoc2md index.js > README.md"
   },
   "repository": {
     "type": "git",

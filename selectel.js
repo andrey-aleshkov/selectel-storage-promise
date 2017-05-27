@@ -3,18 +3,19 @@
  * @see {@link https://support.selectel.ru/storage/api_info/} Selectel's Documentation.
  */
 
-var request = require('request');
-var requestPromise = require('request-promise-native');
-var requestPromiseWithFullResponse = requestPromise.defaults({
-  resolveWithFullResponse: true
-});
 var fs = require('fs');
 
-var storageUrl;
-var authToken;
-var expireAuthToken;
+var Selectel = function(request, requestPromise) {
+  this.request = request;
+  this.requestPromiseWithFullResponse = requestPromise.defaults({
+    resolveWithFullResponse: true
+  });
+  this.storageUrl = '';
+  this.authToken = '';
+  this.expireAuthToken = '';
+};
 
-var copyHeaders = function(req, headers) {
+Selectel.prototype.copyHeaders = function(req, headers) {
   var fieldName;
   for (fieldName in headers) {
     if (fieldName === 'X-Container-Meta-Gallery-Secret') {
@@ -40,9 +41,9 @@ var copyHeaders = function(req, headers) {
  * @param {string} pass - storage password
  * @returns {Promise}
  */
-exports.auth = function(login, pass) {
+Selectel.prototype.auth = function(login, pass) {
   return new Promise((resolve, reject) => {
-    requestPromiseWithFullResponse({
+    this.requestPromiseWithFullResponse({
       url: 'https://auth.selcdn.ru/',
       headers: {
         'X-Auth-User': login,
@@ -50,9 +51,9 @@ exports.auth = function(login, pass) {
       }
     })
       .then((response) => {
-        expireAuthToken = ((parseInt(response.headers['x-expire-auth-token'], 10) * 1000) + Date.now());
-        storageUrl = response.headers['x-storage-url'];
-        authToken = response.headers['x-auth-token'];
+        this.expireAuthToken = ((parseInt(response.headers['x-expire-auth-token'], 10) * 1000) + Date.now());
+        this.storageUrl = response.headers['x-storage-url'];
+        this.authToken = response.headers['x-auth-token'];
         resolve({
           statusCode: response.statusCode
         });
@@ -70,12 +71,12 @@ exports.auth = function(login, pass) {
  * total volume of data stored, total volume of data downloaded.
  * @returns {Promise}
  */
-exports.info = function() {
-  return requestPromiseWithFullResponse({
-    url: storageUrl,
+Selectel.prototype.info = function() {
+  return this.requestPromiseWithFullResponse({
+    url: this.storageUrl,
     method: 'HEAD',
     headers: {
-      'X-Auth-Token': authToken
+      'X-Auth-Token': this.authToken
     }
   });
   // 204 - ОК
@@ -88,7 +89,7 @@ exports.info = function() {
  * @param {string} marker - the name of the final container from the previous request
  * @returns {Promise}
  */
-exports.fetchContainers = function(format, limit, marker) {
+Selectel.prototype.fetchContainers = function(format, limit, marker) {
   // TODO: make default values
   var urlData = '?format=' + format;
 
@@ -99,11 +100,11 @@ exports.fetchContainers = function(format, limit, marker) {
     urlData += '&marker=' + marker;
   }
 
-  return requestPromiseWithFullResponse({
-    url: storageUrl + urlData,
+  return this.requestPromiseWithFullResponse({
+    url: this.storageUrl + urlData,
     method: 'GET',
     headers: {
-      'X-Auth-Token': authToken
+      'X-Auth-Token': this.authToken
     }
   });
   // 200 - ОК
@@ -115,12 +116,12 @@ exports.fetchContainers = function(format, limit, marker) {
  * @param {string} containerType - container type: 'public', 'private' or 'gallery'
  * @returns {Promise}
  */
-exports.createContainer = function(containerName, containerType) {
-  return requestPromiseWithFullResponse({
-    url: storageUrl + containerName,
+Selectel.prototype.createContainer = function(containerName, containerType) {
+  return this.requestPromiseWithFullResponse({
+    url: this.storageUrl + containerName,
     method: 'PUT',
     headers: {
-      'X-Auth-Token': authToken,
+      'X-Auth-Token': this.authToken,
       'X-Container-Meta-Type': containerType // public, private, gallery
     }
   });
@@ -133,12 +134,12 @@ exports.createContainer = function(containerName, containerType) {
  * @param {string} containerName - name of the container
  * @returns {Promise}
  */
-exports.infoContainer = function(containerName) {
-  return requestPromiseWithFullResponse({
-    url: storageUrl + containerName,
+Selectel.prototype.infoContainer = function(containerName) {
+  return this.requestPromiseWithFullResponse({
+    url: this.storageUrl + containerName,
     method: 'HEAD',
     headers: {
-      'X-Auth-Token': authToken
+      'X-Auth-Token': this.authToken
     }
   });
   // 204 - ОК
@@ -150,12 +151,12 @@ exports.infoContainer = function(containerName) {
  * @param {string} containerType - container type: 'public', 'private' or 'gallery'
  * @returns {Promise}
  */
-exports.editContainer = function(containerName, containerType) {
-  return requestPromiseWithFullResponse({
-    url: storageUrl + containerName,
+Selectel.prototype.editContainer = function(containerName, containerType) {
+  return this.requestPromiseWithFullResponse({
+    url: this.storageUrl + containerName,
     method: 'POST',
     headers: {
-      'X-Auth-Token': authToken,
+      'X-Auth-Token': this.authToken,
       'X-Container-Meta-Type': containerType // public, private, gallery
     }
   });
@@ -168,12 +169,12 @@ exports.editContainer = function(containerName, containerType) {
  * @param {string} containerName - name of the container
  * @returns {Promise}
  */
-exports.deleteContainer = function(containerName) {
-  return requestPromiseWithFullResponse({
-    url: storageUrl + containerName,
+Selectel.prototype.deleteContainer = function(containerName) {
+  return this.requestPromiseWithFullResponse({
+    url: this.storageUrl + containerName,
     method: 'DELETE',
     headers: {
-      'X-Auth-Token': authToken
+      'X-Auth-Token': this.authToken
     }
   });
   // 204 (No Content) - при успешном удалении
@@ -193,7 +194,7 @@ exports.deleteContainer = function(containerName) {
  * @param {string} params.delimiter - returns objects up to the given delimiter in the filename
  * @returns {Promise}
  */
-exports.fetchFiles = function(containerName, params) {
+Selectel.prototype.fetchFiles = function(containerName, params) {
   var urlData = containerName + '?format=' + params.format;
 
   if (params.limit) {
@@ -212,11 +213,11 @@ exports.fetchFiles = function(containerName, params) {
     urlData += '&delimiter=' + params.delimiter;
   }
 
-  return requestPromiseWithFullResponse({
-    url: storageUrl + urlData,
+  return this.requestPromiseWithFullResponse({
+    url: this.storageUrl + urlData,
     method: 'GET',
     headers: {
-      'X-Auth-Token': authToken
+      'X-Auth-Token': this.authToken
     }
   });
   // 200 - ОК
@@ -229,7 +230,7 @@ exports.fetchFiles = function(containerName, params) {
  * @param {Object} additionalHeaders - { X-Delete-At: ..., X-Delete-After: ..., Etag: ..., X-Object-Meta: ... }
  * @returns {Promise}
  */
-exports.uploadFile = function(fullLocalPath, hostingPath, additionalHeaders) {
+Selectel.prototype.uploadFile = function(fullLocalPath, hostingPath, additionalHeaders) {
   return new Promise((resolve, reject) => {
     fs.readFile(fullLocalPath, (fsErr, data) => {
       var options;
@@ -238,16 +239,16 @@ exports.uploadFile = function(fullLocalPath, hostingPath, additionalHeaders) {
         reject(fsErr);
       } else {
         options = {
-          url: storageUrl + hostingPath,
+          url: this.storageUrl + hostingPath,
           method: 'PUT',
           headers: {
-            'X-Auth-Token': authToken,
+            'X-Auth-Token': this.authToken,
             'Content-Length': fs.statSync(fullLocalPath).size
           },
           body: data
         };
-        copyHeaders(options, additionalHeaders);
-        requestPromiseWithFullResponse(options)
+        this.copyHeaders(options, additionalHeaders);
+        this.requestPromiseWithFullResponse(options)
           .then((response) => {
             resolve({
               statusCode: response.statusCode
@@ -269,19 +270,19 @@ exports.uploadFile = function(fullLocalPath, hostingPath, additionalHeaders) {
  * @param {string} arhFormat - The archive type: 'tar', 'tar.gz' or 'tar.bz2'
  * @returns {Promise}
  */
-exports.extractArchive = function(readStream, hostingPath, arhFormat) {
+Selectel.prototype.extractArchive = function(readStream, hostingPath, arhFormat) {
   var options = {
     method: 'PUT',
-    url: storageUrl + hostingPath + '?extract-archive=' + arhFormat,
+    url: this.storageUrl + hostingPath + '?extract-archive=' + arhFormat,
     headers: {
-      'X-Auth-Token': authToken,
+      'X-Auth-Token': this.authToken,
       'Accept': 'application/json'
     }
   };
 
   return new Promise((resolve, reject) => {
     readStream
-      .pipe(request(options, (err, response) => {
+      .pipe(this.request(options, (err, response) => {
         if (err || !response) {
           reject(err);
         } else {
@@ -298,12 +299,12 @@ exports.extractArchive = function(readStream, hostingPath, arhFormat) {
  * @param {string} newPath - /{container}/{new-file}
  * @returns {Promise}
  */
-exports.copyFile = function(hostingPath, newPath) {
-  return requestPromiseWithFullResponse({
-    url: storageUrl + hostingPath,
+Selectel.prototype.copyFile = function(hostingPath, newPath) {
+  return this.requestPromiseWithFullResponse({
+    url: this.storageUrl + hostingPath,
     method: 'COPY',
     headers: {
-      'X-Auth-Token': authToken,
+      'X-Auth-Token': this.authToken,
       'Destination': newPath
     }
   });
@@ -315,13 +316,15 @@ exports.copyFile = function(hostingPath, newPath) {
  * @param {string} filePath - /{container}/{file}
  * @returns {Promise}
  */
-exports.deleteFile = function(filePath) {
-  return requestPromiseWithFullResponse({
-    url: storageUrl + filePath,
+Selectel.prototype.deleteFile = function(filePath) {
+  return this.requestPromiseWithFullResponse({
+    url: this.storageUrl + filePath,
     method: 'DELETE',
     headers: {
-      'X-Auth-Token': authToken
+      'X-Auth-Token': this.authToken
     }
   });
   // 204 - ОК
 };
+
+module.exports = Selectel;
