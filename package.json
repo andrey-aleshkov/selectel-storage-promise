@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha ./test/**/*.tests.js",
+    "test-unit": "node ./node_modules/mocha/bin/mocha ./test/unit.tests.js",
+    "test-integration": "node ./node_modules/mocha/bin/mocha ./test/integration.tests.js",
     "test-backup": "node ./node_modules/mocha/bin/mocha",
     "docs": "jsdoc2md index.js > README.md"
   },
