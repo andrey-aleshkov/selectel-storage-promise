@@ -59,9 +59,11 @@ describe('Get the authentication token', function() {
       expect(e.statusCode).to.equal(403);
     }
 
-    // 2) doesn't work
-    // expect().to.be.rejected
-    // return (await selectel.auth(invalidCredentials.login, invalidCredentials.pass)).should.be.rejected;
+    // 2) doesn't work well
+    // expect(selectel.auth(invalidCredentials.login, invalidCredentials.pass)).to.be.rejected;
+    // expect(selectel.auth(invalidCredentials.login, invalidCredentials.pass)).to.be.rejected;
+    // expect(selectel.auth(invalidCredentials.login, invalidCredentials.pass)).to.be.rejected.and.to.eventually.deep.equal({ statusCode: 403 });
+    // expect(selectel.auth(invalidCredentials.login, invalidCredentials.pass)).to.be.rejected.and.to.eventually.deep.equal({ statusCode: 401 });
   });
 
   it('successful with valid credentials', async () => {
