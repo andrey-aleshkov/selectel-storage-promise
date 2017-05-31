@@ -12,7 +12,7 @@ var Selectel = function(request, requestPromise) {
   });
   this.storageUrl = '';
   this.authToken = '';
-  this.expireAuthToken = '';
+  this.expireAuthToken = ''; // TODO: Do I need this?
 };
 
 Selectel.prototype.copyHeaders = function(req, headers) {
@@ -146,7 +146,7 @@ Selectel.prototype.infoContainer = function(containerName) {
 };
 
 /**
- * Changes a container’s metadata.
+ * Changes a container's metadata.
  * @param {string} containerName - name of the container
  * @param {string} containerType - container type: 'public', 'private' or 'gallery'
  * @returns {Promise}

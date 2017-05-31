@@ -14,6 +14,7 @@ const invalidCredentials = {
   login: 'invalidLogin',
   pass: 'invalidPass'
 };
+const validAuthToken = '123';
 const containerName = 'tests';
 const usedContainerName = 'tests-used';
 const requestPromise = {
@@ -22,33 +23,124 @@ const requestPromise = {
       let url = params.url;
       let login = params.headers['X-Auth-User'];
       let pass = params.headers['X-Auth-Key'];
+      let responsePromise;
 
       // console.log('login = ', login);
       // console.log('pass = ', pass);
 
-      return new Promise((resolve, reject) => {
-        // response
-        if (login === validCredentials.login && pass === validCredentials.pass) {
-          resolve({
-            headers: {
-              'x-expire-auth-token': 1,
-              'x-storage-url': '',
-              'x-auth-token': ''
-            },
-            statusCode: 204
+      switch (url) {
+        // authentication
+        case 'https://auth.selcdn.ru/':
+          responsePromise = new Promise((resolve, reject) => {
+            if (login === validCredentials.login && pass === validCredentials.pass) {
+              resolve({
+                headers: {
+                  'x-expire-auth-token': 1,
+                  'x-storage-url': 'storage-url',
+                  'x-auth-token': validAuthToken
+                },
+                statusCode: 204
+              });
+            } else {
+              reject({
+                statusCode: 403
+              });
+            }
           });
-        } else {
-          reject({
-            statusCode: 403
+          break;
+        // information
+        case 'storage-url':
+          let token = params.headers['X-Auth-Token'];
+          responsePromise = new Promise((resolve, reject) => {
+            if (token === validAuthToken) {
+              resolve({
+                headers: {
+                  'X-Account-Bytes-Used': 0,
+                  'X-Account-Container-Count': 0,
+                  'X-Account-Object-Count': 0,
+                  'X-Transfered-Bytes': 0, // TODO: Typo! Should be 'Transferred' ?
+                  'X-Received-Bytes': 0
+                },
+                statusCode: 204
+              });
+            } else {
+              reject({
+                statusCode: 403
+              });
+            }
           });
-        }
-      });
+          break;
+        default:
+          responsePromise = new Promise((resolve, reject) => {
+            reject({
+              statusCode: 403
+            });
+          });
+      }
+
+      return responsePromise;
     };
   }
 };
 const request = sinon.mock();
 const mock = sinon.mock(requestPromise);
 const selectel = new Selectel(request, requestPromise);
+
+describe('Get general information about account', function() {
+  it('failed without authentication', async () => {
+    return expect(selectel.info())
+      .to.be.rejected
+      .and
+      .to.eventually.deep.include({ statusCode: 403 });
+  });
+});
+
+describe('Get the list of available containers', function() {
+  it('failed without authentication', async () => {
+    return expect(selectel.fetchContainers('json'))
+      .to.be.rejected
+      .and
+      .to.eventually.deep.include({ statusCode: 403 });
+  });
+});
+
+describe('Create a new container', function() {
+  it('failed without authentication', async () => {
+    return expect(selectel.createContainer(containerName, 'private'))
+      .to.be.rejected
+      .and
+      .to.eventually.deep.include({ statusCode: 403 });
+  });
+});
+
+describe("Get a container's information", function() {
+  it('failed without authentication', async () => {
+    return expect(selectel.infoContainer(containerName))
+      .to.be.rejected
+      .and
+      .to.eventually.deep.include({ statusCode: 403 });
+  });
+});
+
+describe("Change a container's metadata", function() {
+  it('failed without authentication', async () => {
+    return expect(selectel.editContainer(containerName, 'public'))
+      .to.be.rejected
+      .and
+      .to.eventually.deep.include({ statusCode: 403 });
+  });
+});
+
+describe('Delete the container', function() {
+  it('failed without authentication', async () => {
+    return expect(selectel.deleteContainer(containerName))
+      .to.be.rejected
+      .and
+      .to.eventually.deep.include({ statusCode: 403 });
+  });
+});
+
+// ------------------------------------------------------
 
 describe('Get the authentication token', function() {
   it('failed with invalid credentials', async () => {
@@ -72,13 +164,13 @@ describe('Get the authentication token', function() {
   });
 });
 
-//describe('Get information', function() {
-//  it('info', async () => {
-//    let response = await selectel.info();
-//    expect(response.statusCode).to.equal(204);
-//  });
-//});
-//
+describe('Get general information about account', function() {
+  it('successful with valid token', async () => {
+    let response = await selectel.info();
+    expect(response.statusCode).to.equal(204);
+  });
+});
+
 //describe('Return the list of available containers', function() {
 //  it('in default format', async () => {
 //    let response = await selectel.fetchContainers();
