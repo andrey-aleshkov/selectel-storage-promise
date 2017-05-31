@@ -53,17 +53,17 @@ const selectel = new Selectel(request, requestPromise);
 describe('Get the authentication token', function() {
   it('failed with invalid credentials', async () => {
     // 1) it works
-    try {
-      await selectel.auth(invalidCredentials.login, invalidCredentials.pass);
-    } catch (e) {
-      expect(e.statusCode).to.equal(403);
-    }
+    //try {
+    //  await selectel.auth(invalidCredentials.login, invalidCredentials.pass);
+    //} catch (e) {
+    //  expect(e.statusCode).to.equal(403);
+    //}
 
-    // 2) doesn't work well
-    // expect(selectel.auth(invalidCredentials.login, invalidCredentials.pass)).to.be.rejected;
-    // expect(selectel.auth(invalidCredentials.login, invalidCredentials.pass)).to.be.rejected;
-    // expect(selectel.auth(invalidCredentials.login, invalidCredentials.pass)).to.be.rejected.and.to.eventually.deep.equal({ statusCode: 403 });
-    // expect(selectel.auth(invalidCredentials.login, invalidCredentials.pass)).to.be.rejected.and.to.eventually.deep.equal({ statusCode: 401 });
+    // 2) it works
+    return expect(selectel.auth(invalidCredentials.login, invalidCredentials.pass))
+      .to.be.rejected
+      .and
+      .to.eventually.deep.include({ statusCode: 403 });
   });
 
   it('successful with valid credentials', async () => {
