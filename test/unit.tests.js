@@ -80,7 +80,6 @@ describe('Delete the container', function() {
 
 describe('Get the authentication token', function() {
   it('failed with invalid credentials', async () => {
-    // 1) it works
     try {
      await selectel.auth(credentials.invalid.login, credentials.invalid.pass);
     } catch (e) {
@@ -107,23 +106,23 @@ describe('Get general information about account', function() {
   });
 });
 
-//describe('Return the list of available containers', function() {
-//  it('in default format', async () => {
-//    let response = await selectel.fetchContainers();
-//    expect(response.statusCode).to.equal(200);
-//  });
-//
-//  it('in json format', async () => {
-//    let response = await selectel.fetchContainers('json');
-//    expect(response.statusCode).to.equal(200);
-//  });
-//
-//  it('in xml format', async () => {
-//    let response = await selectel.fetchContainers('xml');
-//    expect(response.statusCode).to.equal(200);
-//  });
-//});
-//
+describe('Return the list of available containers', function() {
+ it('in default format', async () => {
+   let response = await selectel.fetchContainers();
+   expect(response.statusCode).to.equal(200);
+ });
+
+ it('in json format', async () => {
+   let response = await selectel.fetchContainers('json');
+   expect(response.statusCode).to.equal(200);
+ });
+
+ it('in xml format', async () => {
+   let response = await selectel.fetchContainers('xml');
+   expect(response.statusCode).to.equal(200);
+ });
+});
+
 //describe('Create a new container', function() {
 //  it('with name', async () => {
 //    let response = await selectel.createContainer(containerName, 'private');

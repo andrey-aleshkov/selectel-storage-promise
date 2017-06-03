@@ -45,6 +45,7 @@ Selectel.prototype.auth = function(login, pass) {
   return new Promise((resolve, reject) => {
     this.requestPromiseWithFullResponse({
       url: 'https://auth.selcdn.ru/',
+      method: 'GET',
       headers: {
         'X-Auth-User': login,
         'X-Auth-Key': pass
@@ -84,12 +85,12 @@ Selectel.prototype.info = function() {
 
 /**
  * Returns the list of available containers.
- * @param {string} format - 'json' or 'xml'
+ * @param {string} format - 'json' or 'xml', 'json' is the default value
  * @param {string} limit - the maximum number of objects on a list (default - 10 000)
  * @param {string} marker - the name of the final container from the previous request
  * @returns {Promise}
  */
-Selectel.prototype.fetchContainers = function(format, limit, marker) {
+Selectel.prototype.fetchContainers = function(format = 'json', limit, marker) {
   // TODO: make default values
   var urlData = '?format=' + format;
 
@@ -195,7 +196,7 @@ Selectel.prototype.deleteContainer = function(containerName) {
  * @returns {Promise}
  */
 Selectel.prototype.fetchFiles = function(containerName, params) {
-  var urlData = containerName + '?format=' + params.format;
+  var urlData = '?format=' + params.format;
 
   if (params.limit) {
     urlData += '&limit=' + params.limit;
@@ -214,7 +215,7 @@ Selectel.prototype.fetchFiles = function(containerName, params) {
   }
 
   return this.requestPromiseWithFullResponse({
-    url: this.storageUrl + urlData,
+    url: this.storageUrl + containerName + urlData,
     method: 'GET',
     headers: {
       'X-Auth-Token': this.authToken
