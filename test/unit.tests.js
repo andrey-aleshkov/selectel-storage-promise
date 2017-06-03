@@ -88,55 +88,61 @@ const selectel = new Selectel(request, requestPromise);
 
 describe('Get general information about account', function() {
   it('failed without authentication', async () => {
-    return expect(selectel.info())
-      .to.be.rejected
-      .and
-      .to.eventually.deep.include({ statusCode: 403 });
+    try {
+      await selectel.info();
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
   });
 });
 
 describe('Get the list of available containers', function() {
   it('failed without authentication', async () => {
-    return expect(selectel.fetchContainers('json'))
-      .to.be.rejected
-      .and
-      .to.eventually.deep.include({ statusCode: 403 });
+    try {
+      await selectel.fetchContainers('json');
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
   });
 });
 
 describe('Create a new container', function() {
   it('failed without authentication', async () => {
-    return expect(selectel.createContainer(containerName, 'private'))
-      .to.be.rejected
-      .and
-      .to.eventually.deep.include({ statusCode: 403 });
+    try {
+      await selectel.createContainer(containerName, 'private');
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
   });
 });
 
 describe("Get a container's information", function() {
   it('failed without authentication', async () => {
-    return expect(selectel.infoContainer(containerName))
-      .to.be.rejected
-      .and
-      .to.eventually.deep.include({ statusCode: 403 });
+    try {
+      await selectel.infoContainer(containerName);
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
   });
 });
 
 describe("Change a container's metadata", function() {
   it('failed without authentication', async () => {
-    return expect(selectel.editContainer(containerName, 'public'))
-      .to.be.rejected
-      .and
-      .to.eventually.deep.include({ statusCode: 403 });
+    try {
+      await selectel.editContainer(containerName, 'public');
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
   });
 });
 
 describe('Delete the container', function() {
   it('failed without authentication', async () => {
-    return expect(selectel.deleteContainer(containerName))
-      .to.be.rejected
-      .and
-      .to.eventually.deep.include({ statusCode: 403 });
+    try {
+      await selectel.deleteContainer(containerName);
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
   });
 });
 
@@ -145,17 +151,17 @@ describe('Delete the container', function() {
 describe('Get the authentication token', function() {
   it('failed with invalid credentials', async () => {
     // 1) it works
-    //try {
-    //  await selectel.auth(invalidCredentials.login, invalidCredentials.pass);
-    //} catch (e) {
-    //  expect(e.statusCode).to.equal(403);
-    //}
+    try {
+     await selectel.auth(invalidCredentials.login, invalidCredentials.pass);
+    } catch (e) {
+     expect(e.statusCode).to.equal(403);
+    }
 
     // 2) it works
-    return expect(selectel.auth(invalidCredentials.login, invalidCredentials.pass))
-      .to.be.rejected
-      .and
-      .to.eventually.deep.include({ statusCode: 403 });
+    // return expect(selectel.auth(invalidCredentials.login, invalidCredentials.pass))
+    //   .to.be.rejected
+    //   .and
+    //   .to.eventually.deep.include({ statusCode: 403 });
   });
 
   it('successful with valid credentials', async () => {
