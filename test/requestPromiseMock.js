@@ -43,6 +43,21 @@ const requestPromise = {
                 }
               });
               break;
+            // Return a container's information
+            case storageUrl + containerName:
+              responsePromise = new Promise((resolve, reject) => {
+                if (token === validAuthToken) {
+                  resolve({
+                    headers: {},
+                    statusCode: 204
+                  });
+                } else {
+                  reject({
+                    statusCode: 403
+                  });
+                }
+              });
+              break;
             default:
           }
           break;
@@ -101,12 +116,64 @@ const requestPromise = {
           }
           break;
         case 'PUT':
+          switch (baseUrl) {
+            // Create a new container
+            case storageUrl + containerName:
+              responsePromise = new Promise((resolve, reject) => {
+                if (token === validAuthToken) {
+                  resolve({
+                    headers: {},
+                    statusCode: 201
+                  });
+                } else {
+                  reject({
+                    statusCode: 403
+                  });
+                }
+              });
+              break;
+            default:
+          }
           break;
         case 'POST':
+          switch (baseUrl) {
+            // Change a container's metadata
+            case storageUrl + containerName:
+              responsePromise = new Promise((resolve, reject) => {
+                if (token === validAuthToken) {
+                  resolve({
+                    headers: {},
+                    statusCode: 202
+                  });
+                } else {
+                  reject({
+                    statusCode: 403
+                  });
+                }
+              });
+              break;
+          }
           break;
         case 'COPY':
           break;
         case 'DELETE':
+          switch (baseUrl) {
+            // Delete the container
+            case storageUrl + containerName:
+              responsePromise = new Promise((resolve, reject) => {
+                if (token === validAuthToken) {
+                  resolve({
+                    headers: {},
+                    statusCode: 204
+                  });
+                } else {
+                  reject({
+                    statusCode: 403
+                  });
+                }
+              });
+              break;
+          }
           break;
         default:
       }

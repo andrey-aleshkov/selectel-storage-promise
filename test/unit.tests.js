@@ -123,60 +123,55 @@ describe('Return the list of available containers', function() {
  });
 });
 
-//describe('Create a new container', function() {
-//  it('with name', async () => {
-//    let response = await selectel.createContainer(containerName, 'private');
-//    expect(response.statusCode).to.equal(201);
-//  });
-//
-//  it('with already used name', async () => {
-//    let response = await selectel.createContainer(usedContainerName, 'private');
-//    expect(response.statusCode).to.equal(201);
-//  });
-//
-//  it('without name', async () => {
-//    let response = await selectel.createContainer();
-//    expect(response.statusCode).to.equal(201);
-//  });
-//
-//  it('without type', async () => {
-//    let response = await selectel.createContainer(containerName);
-//    expect(response.statusCode).to.equal(201);
-//  });
-//
-//  it('as public', async () => {
-//    let response = await selectel.createContainer(containerName, 'public');
-//    expect(response.statusCode).to.equal(201);
-//  });
-//
-//  it('as private', async () => {
-//    let response = await selectel.createContainer(containerName, 'private');
-//    expect(response.statusCode).to.equal(201);
-//  });
-//
-//  it('as gallery', async () => {
-//    let response = await selectel.createContainer(containerName, 'gallery');
-//    expect(response.statusCode).to.equal(201);
-//  });
-//});
-//
-//describe('infoContainer', function() {
-//  it('infoContainer', async () => {
-//    let response = await selectel.infoContainer(containerName);
-//    expect(response.statusCode).to.equal(204);
-//  });
-//});
-//
-//describe('createContainer', function() {
-//  it('editContainer', async () => {
-//    let response = await selectel.editContainer(containerName, 'public');
-//    expect(response.statusCode).to.equal(202);
-//  });
-//});
-//
-//describe('createContainer', function() {
-//  it('deleteContainer', async () => {
-//    let response = await selectel.deleteContainer(containerName);
-//    expect(response.statusCode).to.equal(204);
-//  });
-//});
+describe('Create a new container', function() {
+  it('without type', async () => {
+    let response = await selectel.createContainer(containerName);
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('as public', async () => {
+    let response = await selectel.createContainer(containerName, 'public');
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('as private', async () => {
+    let response = await selectel.createContainer(containerName, 'private');
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('as gallery', async () => {
+    let response = await selectel.createContainer(containerName, 'gallery');
+    expect(response.statusCode).to.equal(201);
+  });
+
+  // it('with already used name', async () => {
+  //   let response = await selectel.createContainer(usedContainerName, 'private');
+  //   expect(response.statusCode).to.equal(201);
+  // });
+  //
+  // it('without name', async () => {
+  //   let response = await selectel.createContainer();
+  //   expect(response.statusCode).to.equal(201);
+  // });
+});
+
+describe("Get a container's information", function() {
+ it('for existed one', async () => {
+   let response = await selectel.infoContainer(containerName);
+   expect(response.statusCode).to.equal(204);
+ });
+});
+
+describe("Change a container's metadata", function() {
+ it('for existed one', async () => {
+   let response = await selectel.editContainer(containerName, 'public');
+   expect(response.statusCode).to.equal(202);
+ });
+});
+
+describe('Delete the container', function() {
+ it('existed one', async () => {
+   let response = await selectel.deleteContainer(containerName);
+   expect(response.statusCode).to.equal(204);
+ });
+});
