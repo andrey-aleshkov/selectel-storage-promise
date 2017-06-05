@@ -124,7 +124,7 @@ describe('Return the list of available containers', function() {
 });
 
 describe('Create a new container', function() {
-  it('without type', async () => {
+  it('with default type', async () => {
     let response = await selectel.createContainer(containerName);
     expect(response.statusCode).to.equal(201);
   });

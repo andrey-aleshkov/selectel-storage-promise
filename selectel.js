@@ -117,7 +117,7 @@ Selectel.prototype.fetchContainers = function(format = 'json', limit, marker) {
  * @param {string} containerType - container type: 'public', 'private' or 'gallery'. 'public' is the default value
  * @returns {Promise}
  */
-Selectel.prototype.createContainer = function(containerName, containerType = 'public') {
+Selectel.prototype.createContainer = function(containerName, containerType = 'private') {
   return this.requestPromiseWithFullResponse({
     url: this.storageUrl + containerName,
     method: 'PUT',
