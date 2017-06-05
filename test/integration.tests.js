@@ -80,7 +80,7 @@ describe('Files', function() {
 
   after('delete the container', async () => {
     await selectel.deleteFile(`/${containerName}/file-copy.jpg`);
-    await selectel.deleteFile(`/${containerName}/DS_Store`);
+    // await selectel.deleteFile(`/${containerName}/DS_Store`);
     await selectel.deleteContainer(containerName);
   });
 });
