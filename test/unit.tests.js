@@ -1,19 +1,20 @@
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
-const sinon = require('sinon');
+// const chaiAsPromised = require('chai-as-promised');
+// const sinon = require('sinon');
+const request = {};
 const requestPromise = require('./requestPromiseMock');
 const credentials = require('./credentials');
 const Selectel = require('../selectel');
 
 
-chai.use(chaiAsPromised);
+// chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 const containerName = 'tests';
 const usedContainerName = 'tests-used';
 
-const request = sinon.mock();
-const mock = sinon.mock(requestPromise);
+// const request = sinon.mock();
+// const mock = sinon.mock(requestPromise);
 const selectel = new Selectel(request, requestPromise);
 
 describe('Get general information about account', function() {
