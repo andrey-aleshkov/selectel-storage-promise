@@ -81,6 +81,7 @@ Selectel.prototype.info = function() {
     }
   });
   // 204 - ОК
+  // 403 - Forbidden
 };
 
 /**
@@ -109,6 +110,7 @@ Selectel.prototype.fetchContainers = function(format = 'json', limit, marker) {
     }
   });
   // 200 - ОК
+  // 403 - Forbidden
 };
 
 /**
@@ -128,6 +130,7 @@ Selectel.prototype.createContainer = function(containerName, containerType = 'pr
   });
   // 201 (Created) - при успешном создании
   // 202 (Accepted) - если контейнер уже существует
+  // 403 - Forbidden
 };
 
 /**
@@ -144,6 +147,8 @@ Selectel.prototype.infoContainer = function(containerName) {
     }
   });
   // 204 - ОК
+  // 403 - Forbidden
+  // 404 (Not Found) - указанный контейнер не существует
 };
 
 /**
@@ -162,6 +167,7 @@ Selectel.prototype.editContainer = function(containerName, containerType) {
     }
   });
   // 202 (Accepted) - изменение выполнено
+  // 403 - Forbidden
   // 404 (Not Found) - указанный контейнер не существует
 };
 
@@ -179,6 +185,7 @@ Selectel.prototype.deleteContainer = function(containerName) {
     }
   });
   // 204 (No Content) - при успешном удалении
+  // 403 - Forbidden
   // 404 (Not Found) - указанный контейнер не существует
   // 409 (Conflict) - ошибка удаления, контейнер не пустой
 };
@@ -222,6 +229,8 @@ Selectel.prototype.fetchFiles = function(containerName, params) {
     }
   });
   // 200 - ОК
+  // 403 - Forbidden
+  // 404 (Not Found) - указанный контейнер не существует
 };
 
 /**
@@ -262,6 +271,8 @@ Selectel.prototype.uploadFile = function(fullLocalPath, hostingPath, additionalH
     });
   });
   // 201 - ОК
+  // 403 - Forbidden
+  // 404 - TODO: ?
 };
 
 /**
@@ -292,6 +303,8 @@ Selectel.prototype.extractArchive = function(readStream, hostingPath, arhFormat)
       }));
   });
   // 201 - ОК
+  // 403 - Forbidden
+  // 404 - TODO: ?
 };
 
 /**
@@ -310,6 +323,8 @@ Selectel.prototype.copyFile = function(hostingPath, newPath) {
     }
   });
   // 201 - ОК
+  // 403 - Forbidden
+  // 404 - TODO: ?
 };
 
 /**
@@ -326,6 +341,8 @@ Selectel.prototype.deleteFile = function(filePath) {
     }
   });
   // 204 - ОК
+  // 403 - Forbidden
+  // 404 - TODO: ?
 };
 
 module.exports = Selectel;

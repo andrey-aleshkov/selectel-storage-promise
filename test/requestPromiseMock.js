@@ -4,6 +4,9 @@ const validAuthToken = '123';
 const authUrl = 'https://auth.selcdn.ru/';
 const storageUrl = 'https://xxx.selcdn.ru/';
 const containerName = 'tests';
+const usedContainerName = 'tests-used';
+const nonexistentContainerName = 'nonexistent';
+const nonemptyContainerName = 'nonempty';
 
 const requestPromise = {
   defaults: function() {
@@ -11,6 +14,7 @@ const requestPromise = {
       let method = params.method;
       let url = params.url;
       let baseUrl = url.split('?')[0];
+      let thisContainerName = baseUrl.split('/').splice(-1, 1)[0];
       let login = params.headers['X-Auth-User'];
       let pass = params.headers['X-Auth-Key'];
       let token = params.headers['X-Auth-Token'];
@@ -45,11 +49,16 @@ const requestPromise = {
               break;
             // Return a container's information
             case storageUrl + containerName:
+            case storageUrl + nonexistentContainerName:
               responsePromise = new Promise((resolve, reject) => {
                 if (token === validAuthToken) {
+                  let statusCode = 204;
+                  if (thisContainerName !== containerName && thisContainerName !== usedContainerName) {
+                    statusCode = 404;
+                  }
                   resolve({
                     headers: {},
-                    statusCode: 204
+                    statusCode: statusCode
                   });
                 } else {
                   reject({
@@ -119,11 +128,12 @@ const requestPromise = {
           switch (baseUrl) {
             // Create a new container
             case storageUrl + containerName:
+            case storageUrl + usedContainerName:
               responsePromise = new Promise((resolve, reject) => {
                 if (token === validAuthToken) {
                   resolve({
                     headers: {},
-                    statusCode: 201
+                    statusCode: thisContainerName !== usedContainerName ? 201 : 202
                   });
                 } else {
                   reject({
@@ -139,11 +149,16 @@ const requestPromise = {
           switch (baseUrl) {
             // Change a container's metadata
             case storageUrl + containerName:
+            case storageUrl + nonexistentContainerName:
               responsePromise = new Promise((resolve, reject) => {
                 if (token === validAuthToken) {
+                  let statusCode = 202;
+                  if (thisContainerName !== containerName && thisContainerName !== usedContainerName) {
+                    statusCode = 404;
+                  }
                   resolve({
                     headers: {},
-                    statusCode: 202
+                    statusCode: statusCode
                   });
                 } else {
                   reject({
@@ -160,11 +175,21 @@ const requestPromise = {
           switch (baseUrl) {
             // Delete the container
             case storageUrl + containerName:
+            case storageUrl + nonexistentContainerName:
+            case storageUrl + nonemptyContainerName:
               responsePromise = new Promise((resolve, reject) => {
                 if (token === validAuthToken) {
+                  let statusCode;
+                  if (thisContainerName === nonemptyContainerName) {
+                    statusCode = 409;
+                  } else if (thisContainerName === containerName || thisContainerName === usedContainerName) {
+                    statusCode = 204;
+                  } else {
+                    statusCode = 404;
+                  }
                   resolve({
                     headers: {},
-                    statusCode: 204
+                    statusCode: statusCode
                   });
                 } else {
                   reject({

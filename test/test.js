@@ -1,0 +1,184 @@
+const chai = require('chai');
+// const chaiAsPromised = require('chai-as-promised');
+// const sinon = require('sinon');
+const request = process.env.NODE_ENV === 'production' ? require('request') : require('./requestMock');
+const requestPromise = process.env.NODE_ENV === 'production' ? require('request-promise-native') : require('./requestPromiseMock');
+const credentials = require('./credentials');
+const Selectel = require('../selectel');
+
+// chai.use(chaiAsPromised);
+const expect = chai.expect;
+
+const containerName = 'tests';
+const usedContainerName = 'tests-used';
+const nonexistentContainerName = 'nonexistent';
+const nonemptyContainerName = 'nonempty';
+
+// const request = sinon.mock();
+// const mock = sinon.mock(requestPromise);
+const selectel = new Selectel(request, requestPromise);
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+describe('403: Failed with invalid credentials', function() {
+  it('Get the authentication token', async () => {
+    try {
+      await selectel.auth(credentials.invalid.login, credentials.invalid.pass);
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
+
+    // 2) it works
+    // return expect(selectel.auth(credentials.invalid.login, credentials.invalid.pass))
+    //   .to.be.rejected
+    //   .and
+    //   .to.eventually.deep.include({ statusCode: 403 });
+  });
+
+  it('Get general information about account', async () => {
+    try {
+      await selectel.info();
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
+  });
+
+  it('Get the list of available containers', async () => {
+    try {
+      await selectel.fetchContainers('json');
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
+  });
+
+  it('Create a new container', async () => {
+    try {
+      await selectel.createContainer(containerName, 'private');
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
+  });
+
+  it("Get a container's information", async () => {
+    try {
+      await selectel.infoContainer(containerName);
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
+  });
+
+  it("Change a container's metadata", async () => {
+    try {
+      await selectel.editContainer(containerName, 'public');
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
+  });
+
+  it('Delete the container', async () => {
+    try {
+      await selectel.deleteContainer(containerName);
+    } catch (e) {
+      expect(e.statusCode).to.equal(403);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+describe('2XX: Successful with valid credentials', function() {
+  it('Get the authentication token', async () => {
+    let response = await selectel.auth(credentials.valid.login, credentials.valid.pass);
+    expect(response.statusCode).to.equal(204);
+  });
+
+  it('Get general information about account', async () => {
+    let response = await selectel.info();
+    expect(response.statusCode).to.equal(204);
+  });
+
+  it('Return the list of available containers in default format', async () => {
+    let response = await selectel.fetchContainers();
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('Return the list of available containers in json format', async () => {
+    let response = await selectel.fetchContainers('json');
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('Return the list of available containers in xml format', async () => {
+    let response = await selectel.fetchContainers('xml');
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('Create a new container with default type', async () => {
+    let response = await selectel.createContainer(containerName);
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('Create a new container as public', async () => {
+    let response = await selectel.createContainer(containerName, 'public');
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('Create a new container as private', async () => {
+    let response = await selectel.createContainer(containerName, 'private');
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('Create a new container as gallery', async () => {
+    let response = await selectel.createContainer(containerName, 'gallery');
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('Create a new container with already used name', async () => {
+    let response = await selectel.createContainer(usedContainerName);
+    expect(response.statusCode).to.equal(202);
+  });
+
+  //
+  // it('Create a new container without name', async () => {
+  //   let response = await selectel.createContainer();
+  //   expect(response.statusCode).to.equal(201);
+  // });
+
+  it("Get a container's information for existed one", async () => {
+    let response = await selectel.infoContainer(containerName);
+    expect(response.statusCode).to.equal(204);
+  });
+
+  it("Change a container's metadata for existed one", async () => {
+    let response = await selectel.editContainer(containerName, 'public');
+    expect(response.statusCode).to.equal(202);
+  });
+
+  it('Delete the container existed one', async () => {
+    let response = await selectel.deleteContainer(containerName);
+    expect(response.statusCode).to.equal(204);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+describe('4XX: Failed with valid credentials', function() {
+  it("Get a nonexistent container's information", async () => {
+    let response = await selectel.infoContainer(nonexistentContainerName);
+    expect(response.statusCode).to.equal(404);
+  });
+
+  it("Change a nonexistent container's", async () => {
+    let response = await selectel.editContainer(nonexistentContainerName, 'public');
+    expect(response.statusCode).to.equal(404);
+  });
+
+  it('Delete a nonexistent container', async () => {
+    let response = await selectel.deleteContainer(nonexistentContainerName);
+    expect(response.statusCode).to.equal(404);
+  });
+
+  it('Delete a nonempty container', async () => {
+    let response = await selectel.deleteContainer(nonemptyContainerName);
+    expect(response.statusCode).to.equal(409);
+  });
+});

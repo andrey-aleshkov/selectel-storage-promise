@@ -4,8 +4,8 @@ const credentials = {
     pass: 'invalidPass'
   },
   valid: {
-    login: 'validLogin',
-    pass: 'validPass'
+    login: process.env.NODE_ENV === process.env.SELECTEL_LOGIN ? '' : 'validLogin',
+    pass: process.env.NODE_ENV === process.env.SELECTEL_PASS ? '' : 'validPass'
   }
 };
 

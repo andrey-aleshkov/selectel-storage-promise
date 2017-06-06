@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha ./test/**/*.test.js",
-    "test-unit": "node ./node_modules/mocha/bin/mocha ./test/unit.test.js",
-    "test-integration": "node ./node_modules/mocha/bin/mocha ./test/integration.test.js",
+    "test-unit": "NODE_ENV=development node ./node_modules/mocha/bin/mocha ./test/test.js",
+    "test-integration": "NODE_ENV=production node ./node_modules/mocha/bin/mocha ./test/test.js",
     "test-backup": "node ./node_modules/mocha/bin/mocha",
     "docs": "jsdoc2md index.js > README.md"
   },
