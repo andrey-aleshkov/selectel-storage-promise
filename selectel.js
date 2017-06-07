@@ -1,10 +1,19 @@
-/** @module selectel */
 /**
- * @see {@link https://support.selectel.ru/storage/api_info/} Selectel's Documentation.
- */
+ * Manage Selectel's storage
+ * {@link https://support.selectel.ru/storage/api_info/|Selectel's Documentation}
+ *
+ * @module Selectel */
 
 var fs = require('fs');
 
+/**
+ * Constructor function.
+ *
+ * @exports Selectel
+ * @constructor
+ * @param {Object} request
+ * @param {Object} requestPromise
+ */
 var Selectel = function(request, requestPromise) {
   this.request = request;
   this.requestPromiseWithFullResponse = requestPromise.defaults({
@@ -15,7 +24,7 @@ var Selectel = function(request, requestPromise) {
   this.expireAuthToken = ''; // TODO: Do I need this?
 };
 
-Selectel.prototype.copyHeaders = function(req, headers) {
+function copyHeaders(req, headers) {
   var fieldName;
   for (fieldName in headers) {
     if (fieldName === 'X-Container-Meta-Gallery-Secret') {
@@ -24,16 +33,7 @@ Selectel.prototype.copyHeaders = function(req, headers) {
       req.headers[fieldName] = headers[fieldName];
     }
   }
-};
-
-// debug
-// require('request-debug')(request);
-
-// exports
-
-/**
- * @interface
- */
+}
 
 /**
  * Gets the authentication token (key) for accessing storage and sets it internally.
@@ -308,7 +308,7 @@ Selectel.prototype.uploadFile = function(fullLocalPath, hostingPath, additionalH
           },
           body: data
         };
-        this.copyHeaders(options, additionalHeaders);
+        copyHeaders(options, additionalHeaders);
         this.requestPromiseWithFullResponse(options)
           .then((response) => {
             resolve({
