@@ -84,11 +84,12 @@ Selectel.prototype.info = function() {
     });
   } else {
     result = Promise.reject({
-      statusCode: 1
+      statusCode: 499
     });
   }
   return result;
   // 204 - ОК
+  // 499 - CANCELLED
 };
 
 /**
@@ -119,11 +120,12 @@ Selectel.prototype.fetchContainers = function(format = 'json', limit, marker) {
     });
   } else {
     result = Promise.reject({
-      statusCode: 1
+      statusCode: 499
     });
   }
   return result;
   // 200 - ОК
+  // 499 - CANCELLED
 };
 
 /**
@@ -145,13 +147,14 @@ Selectel.prototype.createContainer = function(containerName, containerType = 'pr
     });
   } else {
     result = Promise.reject({
-      statusCode: 1
+      statusCode: 499
     });
   }
   return result;
   // 201 (Created) - при успешном создании
   // 202 (Accepted) - если контейнер уже существует
   // 403 - Forbidden
+  // 499 - CANCELLED
 };
 
 /**
@@ -171,13 +174,14 @@ Selectel.prototype.infoContainer = function(containerName) {
     });
   } else {
     result = Promise.reject({
-      statusCode: 1
+      statusCode: 499
     });
   }
   return result;
   // 204 - ОК
   // 403 - Forbidden
   // 404 (Not Found) - указанный контейнер не существует
+  // 499 - CANCELLED
 };
 
 /**
@@ -199,13 +203,14 @@ Selectel.prototype.editContainer = function(containerName, containerType) {
     });
   } else {
     result = Promise.reject({
-      statusCode: 1
+      statusCode: 499
     });
   }
   return result;
   // 202 (Accepted) - изменение выполнено
   // 403 - Forbidden
   // 404 (Not Found) - указанный контейнер не существует
+  // 499 - CANCELLED
 };
 
 /**
@@ -225,7 +230,7 @@ Selectel.prototype.deleteContainer = function(containerName) {
     });
   } else {
     result = Promise.reject({
-      statusCode: 1
+      statusCode: 499
     });
   }
   return result;
@@ -233,6 +238,7 @@ Selectel.prototype.deleteContainer = function(containerName) {
   // 403 - Forbidden
   // 404 (Not Found) - указанный контейнер не существует
   // 409 (Conflict) - ошибка удаления, контейнер не пустой
+  // 499 - CANCELLED
 };
 
 /**

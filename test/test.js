@@ -39,7 +39,7 @@ describe('403: Failed with invalid credentials', function() {
     try {
       await selectel.info();
     } catch (e) {
-      expect(e.statusCode).to.equal(1);
+      expect(e.statusCode).to.equal(499);
     }
   });
 
@@ -47,7 +47,7 @@ describe('403: Failed with invalid credentials', function() {
     try {
       await selectel.fetchContainers('json');
     } catch (e) {
-      expect(e.statusCode).to.equal(1);
+      expect(e.statusCode).to.equal(499);
     }
   });
 
@@ -55,7 +55,7 @@ describe('403: Failed with invalid credentials', function() {
     try {
       await selectel.createContainer(containerName, 'private');
     } catch (e) {
-      expect(e.statusCode).to.equal(1);
+      expect(e.statusCode).to.equal(499);
     }
   });
 
@@ -63,7 +63,7 @@ describe('403: Failed with invalid credentials', function() {
     try {
       await selectel.infoContainer(containerName);
     } catch (e) {
-      expect(e.statusCode).to.equal(1);
+      expect(e.statusCode).to.equal(499);
     }
   });
 
@@ -71,7 +71,7 @@ describe('403: Failed with invalid credentials', function() {
     try {
       await selectel.editContainer(containerName, 'public');
     } catch (e) {
-      expect(e.statusCode).to.equal(1);
+      expect(e.statusCode).to.equal(499);
     }
   });
 
@@ -79,7 +79,7 @@ describe('403: Failed with invalid credentials', function() {
     try {
       await selectel.deleteContainer(containerName);
     } catch (e) {
-      expect(e.statusCode).to.equal(1);
+      expect(e.statusCode).to.equal(499);
     }
   });
 });
