@@ -73,15 +73,22 @@ Selectel.prototype.auth = function(login, pass) {
  * @returns {Promise}
  */
 Selectel.prototype.info = function() {
-  return this.requestPromiseWithFullResponse({
-    url: this.storageUrl,
-    method: 'HEAD',
-    headers: {
-      'X-Auth-Token': this.authToken
-    }
-  });
+  let result;
+  if (this.storageUrl && this.authToken) {
+    result = this.requestPromiseWithFullResponse({
+      url: this.storageUrl,
+      method: 'HEAD',
+      headers: {
+        'X-Auth-Token': this.authToken
+      }
+    });
+  } else {
+    result = Promise.reject({
+      statusCode: 1
+    });
+  }
+  return result;
   // 204 - ОК
-  // 403 - Forbidden
 };
 
 /**
@@ -92,8 +99,8 @@ Selectel.prototype.info = function() {
  * @returns {Promise}
  */
 Selectel.prototype.fetchContainers = function(format = 'json', limit, marker) {
-  // TODO: make default values
-  var urlData = '?format=' + format;
+  let result;
+  let urlData = '?format=' + format;
 
   if (limit) {
     urlData += '&limit=' + limit;
@@ -102,15 +109,21 @@ Selectel.prototype.fetchContainers = function(format = 'json', limit, marker) {
     urlData += '&marker=' + marker;
   }
 
-  return this.requestPromiseWithFullResponse({
-    url: this.storageUrl + urlData,
-    method: 'GET',
-    headers: {
-      'X-Auth-Token': this.authToken
-    }
-  });
+  if (this.storageUrl && this.authToken) {
+    result = this.requestPromiseWithFullResponse({
+      url: this.storageUrl + urlData,
+      method: 'GET',
+      headers: {
+        'X-Auth-Token': this.authToken
+      }
+    });
+  } else {
+    result = Promise.reject({
+      statusCode: 1
+    });
+  }
+  return result;
   // 200 - ОК
-  // 403 - Forbidden
 };
 
 /**
@@ -120,14 +133,22 @@ Selectel.prototype.fetchContainers = function(format = 'json', limit, marker) {
  * @returns {Promise}
  */
 Selectel.prototype.createContainer = function(containerName, containerType = 'private') {
-  return this.requestPromiseWithFullResponse({
-    url: this.storageUrl + containerName,
-    method: 'PUT',
-    headers: {
-      'X-Auth-Token': this.authToken,
-      'X-Container-Meta-Type': containerType // public, private, gallery
-    }
-  });
+  let result;
+  if (this.storageUrl && this.authToken) {
+    result = this.requestPromiseWithFullResponse({
+      url: this.storageUrl + containerName,
+      method: 'PUT',
+      headers: {
+        'X-Auth-Token': this.authToken,
+        'X-Container-Meta-Type': containerType // public, private, gallery
+      }
+    });
+  } else {
+    result = Promise.reject({
+      statusCode: 1
+    });
+  }
+  return result;
   // 201 (Created) - при успешном создании
   // 202 (Accepted) - если контейнер уже существует
   // 403 - Forbidden
@@ -139,13 +160,21 @@ Selectel.prototype.createContainer = function(containerName, containerType = 'pr
  * @returns {Promise}
  */
 Selectel.prototype.infoContainer = function(containerName) {
-  return this.requestPromiseWithFullResponse({
-    url: this.storageUrl + containerName,
-    method: 'HEAD',
-    headers: {
-      'X-Auth-Token': this.authToken
-    }
-  });
+  let result;
+  if (this.storageUrl && this.authToken) {
+    result = this.requestPromiseWithFullResponse({
+      url: this.storageUrl + containerName,
+      method: 'HEAD',
+      headers: {
+        'X-Auth-Token': this.authToken
+      }
+    });
+  } else {
+    result = Promise.reject({
+      statusCode: 1
+    });
+  }
+  return result;
   // 204 - ОК
   // 403 - Forbidden
   // 404 (Not Found) - указанный контейнер не существует
@@ -158,14 +187,22 @@ Selectel.prototype.infoContainer = function(containerName) {
  * @returns {Promise}
  */
 Selectel.prototype.editContainer = function(containerName, containerType) {
-  return this.requestPromiseWithFullResponse({
-    url: this.storageUrl + containerName,
-    method: 'POST',
-    headers: {
-      'X-Auth-Token': this.authToken,
-      'X-Container-Meta-Type': containerType // public, private, gallery
-    }
-  });
+  let result;
+  if (this.storageUrl && this.authToken) {
+    result = this.requestPromiseWithFullResponse({
+      url: this.storageUrl + containerName,
+      method: 'POST',
+      headers: {
+        'X-Auth-Token': this.authToken,
+        'X-Container-Meta-Type': containerType // public, private, gallery
+      }
+    });
+  } else {
+    result = Promise.reject({
+      statusCode: 1
+    });
+  }
+  return result;
   // 202 (Accepted) - изменение выполнено
   // 403 - Forbidden
   // 404 (Not Found) - указанный контейнер не существует
@@ -177,13 +214,21 @@ Selectel.prototype.editContainer = function(containerName, containerType) {
  * @returns {Promise}
  */
 Selectel.prototype.deleteContainer = function(containerName) {
-  return this.requestPromiseWithFullResponse({
-    url: this.storageUrl + containerName,
-    method: 'DELETE',
-    headers: {
-      'X-Auth-Token': this.authToken
-    }
-  });
+  let result;
+  if (this.storageUrl && this.authToken) {
+    result = this.requestPromiseWithFullResponse({
+      url: this.storageUrl + containerName,
+      method: 'DELETE',
+      headers: {
+        'X-Auth-Token': this.authToken
+      }
+    });
+  } else {
+    result = Promise.reject({
+      statusCode: 1
+    });
+  }
+  return result;
   // 204 (No Content) - при успешном удалении
   // 403 - Forbidden
   // 404 (Not Found) - указанный контейнер не существует
