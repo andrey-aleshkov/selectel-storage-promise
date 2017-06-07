@@ -1,12 +1,9 @@
 const chai = require('chai');
-// const chaiAsPromised = require('chai-as-promised');
-// const sinon = require('sinon');
 const request = process.env.NODE_ENV === 'production' ? require('request') : require('./requestMock');
 const requestPromise = process.env.NODE_ENV === 'production' ? require('request-promise-native') : require('./requestPromiseMock');
 const credentials = require('./credentials');
 const Selectel = require('../selectel');
 
-// chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 const containerName = 'tests';
