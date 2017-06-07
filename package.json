@@ -1,6 +1,6 @@
 {
   "name": "selectel-storage-promise",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Manage Selectel's storage",
   "main": "index.js",
   "scripts": {
