@@ -10,7 +10,7 @@ const Selectel = require('../selectel');
 const expect = chai.expect;
 
 const containerName = 'tests';
-const usedContainerName = 'tests-used';
+const usedContainerName = process.env.NODE_ENV === 'production' ? 'tests' : 'tests-used';
 const nonexistentContainerName = 'nonexistent';
 const nonemptyContainerName = 'nonempty';
 
@@ -20,7 +20,7 @@ const selectel = new Selectel(request, requestPromise);
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-describe('403: Failed with invalid credentials', function() {
+describe('4XX: Failed with invalid credentials', function() {
   it('Get the authentication token', async () => {
     try {
       await selectel.auth(credentials.invalid.login, credentials.invalid.pass);
@@ -167,22 +167,34 @@ describe('2XX: Successful with valid credentials', function() {
 
 describe('4XX: Failed with valid credentials', function() {
   it("Get a nonexistent container's information", async () => {
-    let response = await selectel.infoContainer(nonexistentContainerName);
-    expect(response.statusCode).to.equal(404);
+    try {
+      await selectel.infoContainer(nonexistentContainerName);
+    } catch (e) {
+      expect(e.statusCode).to.equal(404);
+    }
   });
 
   it("Change a nonexistent container's", async () => {
-    let response = await selectel.editContainer(nonexistentContainerName, 'public');
-    expect(response.statusCode).to.equal(404);
+    try {
+      selectel.editContainer(nonexistentContainerName, 'public');
+    } catch (e) {
+      expect(e.statusCode).to.equal(404);
+    }
   });
 
   it('Delete a nonexistent container', async () => {
-    let response = await selectel.deleteContainer(nonexistentContainerName);
-    expect(response.statusCode).to.equal(404);
+    try {
+      await selectel.deleteContainer(nonexistentContainerName);
+    } catch (e) {
+      expect(e.statusCode).to.equal(404);
+    }
   });
 
   it('Delete a nonempty container', async () => {
-    let response = await selectel.deleteContainer(nonemptyContainerName);
-    expect(response.statusCode).to.equal(409);
+    try {
+      await selectel.deleteContainer(nonemptyContainerName);
+    } catch (e) {
+      expect(e.statusCode).to.equal(404);
+    }
   });
 });
