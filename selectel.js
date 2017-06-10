@@ -21,7 +21,7 @@ var Selectel = function(request, requestPromise) {
   });
   this.storageUrl = '';
   this.authToken = '';
-  this.expireAuthToken = ''; // TODO: Do I need this??
+  this.expireAuthToken = ''; // TODO: Do I need this???
 };
 
 function copyHeaders(req, headers) {
