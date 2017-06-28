@@ -1,6 +1,7 @@
 const chai = require('chai');
 const request = process.env.NODE_ENV === 'production' ? require('request') : require('./requestMock');
 const requestPromise = process.env.NODE_ENV === 'production' ? require('request-promise-native') : require('./requestPromiseMock');
+const targz = require('tar.gz');
 const credentials = require('./credentials');
 const Selectel = require('../selectel');
 
@@ -193,5 +194,50 @@ describe('4XX: Failed with valid credentials', function() {
     } catch (e) {
       expect(e.statusCode).to.equal(404);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+describe('Files', function() {
+  before('create a container', async () => {
+    await selectel.createContainer(containerName, 'private');
+  });
+
+  it('fetchFiles', async () => {
+    let response = await selectel.fetchFiles(containerName, {
+      format: 'json'
+    });
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('uploadFile', async () => {
+    let response = await selectel.uploadFile(__dirname + '/files/file.jpg', `${containerName}/file.jpg`);
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('extractArchive', async () => {
+    let read = targz({}, { fromBase: true }).createReadStream(__dirname + '/files');
+    //let response = {
+    //    statusCode: 201
+    //};
+    let response = await selectel.extractArchive(read, `/${containerName}`, 'tar.gz');
+    expect(response.statusCode).to.equal(201);
+  }).timeout(10000);
+
+  it('copyFile', async () => {
+    let response = await selectel.copyFile(`/${containerName}/file.jpg`, `/${containerName}/file-copy.jpg`);
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('deleteFile', async () => {
+    let response = await selectel.deleteFile(`/${containerName}/file.jpg`);
+    expect(response.statusCode).to.equal(204);
+  });
+
+  after('delete the container', async () => {
+    await selectel.deleteFile(`/${containerName}/file-copy.jpg`);
+    await selectel.deleteFile(`/${containerName}/DS_Store`);
+    await selectel.deleteContainer(containerName);
   });
 });

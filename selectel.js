@@ -327,9 +327,9 @@ Selectel.prototype.uploadFile = function(fullLocalPath, hostingPath, additionalH
 };
 
 /**
- * Extracts the archive.
+ * Extracts an archive.
  * @param {pipe} readStream - read stream
- * @param {string} hostingPath - /{container}/{file}
+ * @param {string} hostingPath - {container} or {container}/folder or nothing (root)
  * @param {string} arhFormat - The archive type: 'tar', 'tar.gz' or 'tar.bz2'
  * @returns {Promise}
  */

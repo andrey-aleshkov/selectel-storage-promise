@@ -7,6 +7,7 @@ const containerName = 'tests';
 const usedContainerName = 'tests-used';
 const nonexistentContainerName = 'nonexistent';
 const nonemptyContainerName = 'nonempty';
+const fileName = 'file.jpg';
 
 const requestPromise = {
   defaults: function() {
@@ -134,6 +135,21 @@ const requestPromise = {
                   resolve({
                     headers: {},
                     statusCode: thisContainerName !== usedContainerName ? 201 : 202
+                  });
+                } else {
+                  reject({
+                    statusCode: 403
+                  });
+                }
+              });
+              break;
+            // Upload a file to the container
+            case storageUrl + containerName + '/' + fileName:
+              responsePromise = new Promise((resolve, reject) => {
+                if (token === validAuthToken) {
+                  resolve({
+                    headers: {},
+                    statusCode: 201
                   });
                 } else {
                   reject({
