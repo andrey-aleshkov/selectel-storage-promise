@@ -8,6 +8,8 @@ const usedContainerName = 'tests-used';
 const nonexistentContainerName = 'nonexistent';
 const nonemptyContainerName = 'nonempty';
 const fileName = 'file.jpg';
+const copyFileName = 'file-copy.jpg';
+const dsStoreFileName = 'DS_Store';
 
 const requestPromise = {
   defaults: function() {
@@ -234,6 +236,8 @@ const requestPromise = {
               break;
             // Delete a file
             case storageUrl + containerName + '/' + fileName:
+            case storageUrl + containerName + '/' + copyFileName:
+            case storageUrl + containerName + '/' + dsStoreFileName:
               responsePromise = new Promise((resolve, reject) => {
                 if (token === validAuthToken) {
                   resolve({

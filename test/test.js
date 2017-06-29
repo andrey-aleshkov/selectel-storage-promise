@@ -10,7 +10,7 @@ const expect = chai.expect;
 const containerName = 'tests';
 const usedContainerName = process.env.NODE_ENV === 'production' ? 'tests' : 'tests-used';
 const nonexistentContainerName = 'nonexistent';
-const nonemptyContainerName = 'nonempty';
+const nonemptyContainerName = process.env.NODE_ENV === 'production' ? 'tests' : 'nonempty';
 
 // const request = sinon.mock();
 // const mock = sinon.mock(requestPromise);
@@ -155,7 +155,55 @@ describe('2XX: Successful with valid credentials', function() {
     expect(response.statusCode).to.equal(202);
   });
 
-  it('Delete the container existed one', async () => {
+  // files
+
+  it('Return a list of files stored in the existing container', async () => {
+    let response = await selectel.fetchFiles(containerName, {
+      format: 'json'
+    });
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('Upload a file to the existing container', async () => {
+    let response = await selectel.uploadFile(__dirname + '/files/file.jpg', `${containerName}/file.jpg`);
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('Copy a file', async () => {
+    let response = await selectel.copyFile(`${containerName}/file.jpg`, `${containerName}/file-copy.jpg`);
+    expect(response.statusCode).to.equal(201);
+  });
+
+  it('Extract an archive (tar.gz)', async () => {
+    let read = targz({}, { fromBase: true }).createReadStream(__dirname + '/files');
+    let response = await selectel.extractArchive(read, `${containerName}`, 'tar.gz');
+    expect(response.statusCode).to.equal(201);
+  }).timeout(10000);
+
+  it('Delete the given file', async () => {
+    let response = await selectel.deleteFile(`${containerName}/file.jpg`);
+    expect(response.statusCode).to.equal(204);
+  });
+
+  it('Delete the non-empty existing container', async () => {
+    try {
+      await selectel.deleteContainer(nonemptyContainerName);
+    } catch (e) {
+      expect(e.statusCode).to.equal(409);
+    }
+  });
+
+  it('Delete the given file', async () => {
+    let response = await selectel.deleteFile(`${containerName}/file-copy.jpg`);
+    expect(response.statusCode).to.equal(204);
+  });
+
+  it('Delete the DS_Store file', async () => {
+    let response = await selectel.deleteFile(`${containerName}/DS_Store`);
+    expect(response.statusCode).to.equal(204);
+  });
+
+  it('Delete the empty existing container', async () => {
     let response = await selectel.deleteContainer(containerName);
     expect(response.statusCode).to.equal(204);
   });
@@ -164,7 +212,7 @@ describe('2XX: Successful with valid credentials', function() {
 // ---------------------------------------------------------------------------------------------------------------------
 
 describe('4XX: Failed with valid credentials', function() {
-  it("Get a nonexistent container's information", async () => {
+  it("Get a non-existent container's information", async () => {
     try {
       await selectel.infoContainer(nonexistentContainerName);
     } catch (e) {
@@ -172,7 +220,7 @@ describe('4XX: Failed with valid credentials', function() {
     }
   });
 
-  it("Change a nonexistent container's", async () => {
+  it("Change a non-existent container's", async () => {
     try {
       selectel.editContainer(nonexistentContainerName, 'public');
     } catch (e) {
@@ -180,17 +228,9 @@ describe('4XX: Failed with valid credentials', function() {
     }
   });
 
-  it('Delete a nonexistent container', async () => {
+  it('Delete a non-existent container', async () => {
     try {
       await selectel.deleteContainer(nonexistentContainerName);
-    } catch (e) {
-      expect(e.statusCode).to.equal(404);
-    }
-  });
-
-  it('Delete a nonempty container', async () => {
-    try {
-      await selectel.deleteContainer(nonemptyContainerName);
     } catch (e) {
       expect(e.statusCode).to.equal(404);
     }
@@ -199,42 +239,14 @@ describe('4XX: Failed with valid credentials', function() {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-describe('Files', function() {
-  before('create a container', async () => {
-    await selectel.createContainer(containerName, 'private');
-  });
-
-  it('fetchFiles', async () => {
-    let response = await selectel.fetchFiles(containerName, {
-      format: 'json'
-    });
-    expect(response.statusCode).to.equal(200);
-  });
-
-  it('uploadFile', async () => {
-    let response = await selectel.uploadFile(__dirname + '/files/file.jpg', `${containerName}/file.jpg`);
-    expect(response.statusCode).to.equal(201);
-  });
-
-  it('extractArchive', async () => {
-    let read = targz({}, { fromBase: true }).createReadStream(__dirname + '/files');
-    let response = await selectel.extractArchive(read, `${containerName}`, 'tar.gz');
-    expect(response.statusCode).to.equal(201);
-  }).timeout(10000);
-
-  it('copyFile', async () => {
-    let response = await selectel.copyFile(`${containerName}/file.jpg`, `${containerName}/file-copy.jpg`);
-    expect(response.statusCode).to.equal(201);
-  });
-
-  it('deleteFile', async () => {
-    let response = await selectel.deleteFile(`${containerName}/file.jpg`);
-    expect(response.statusCode).to.equal(204);
-  });
-
-  after('delete the container', async () => {
-    await selectel.deleteFile(`${containerName}/file-copy.jpg`);
-    await selectel.deleteFile(`${containerName}/DS_Store`);
-    await selectel.deleteContainer(containerName);
-  });
-});
+//describe('Files', function() {
+//  before('create a container', async () => {
+//    await selectel.createContainer(containerName, 'private');
+//  });
+//
+//  after('delete the container', async () => {
+//    await selectel.deleteFile(`${containerName}/file-copy.jpg`);
+//    await selectel.deleteFile(`${containerName}/DS_Store`);
+//    await selectel.deleteContainer(containerName);
+//  });
+//});
