@@ -186,6 +186,24 @@ const requestPromise = {
           }
           break;
         case 'COPY':
+          switch (baseUrl) {
+            // Copy a file to the given folder
+            case storageUrl + containerName + '/' + fileName:
+              responsePromise = new Promise((resolve, reject) => {
+                if (token === validAuthToken) {
+                  resolve({
+                    headers: {},
+                    statusCode: 201
+                  });
+                } else {
+                  reject({
+                    statusCode: 403
+                  });
+                }
+              });
+              break;
+            default:
+          }
           break;
         case 'DELETE':
           switch (baseUrl) {
@@ -214,6 +232,22 @@ const requestPromise = {
                 }
               });
               break;
+            // Delete a file
+            case storageUrl + containerName + '/' + fileName:
+              responsePromise = new Promise((resolve, reject) => {
+                if (token === validAuthToken) {
+                  resolve({
+                    headers: {},
+                    statusCode: 204
+                  });
+                } else {
+                  reject({
+                    statusCode: 403
+                  });
+                }
+              });
+              break;
+            default:
           }
           break;
         default:

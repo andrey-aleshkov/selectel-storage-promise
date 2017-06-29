@@ -218,26 +218,23 @@ describe('Files', function() {
 
   it('extractArchive', async () => {
     let read = targz({}, { fromBase: true }).createReadStream(__dirname + '/files');
-    //let response = {
-    //    statusCode: 201
-    //};
-    let response = await selectel.extractArchive(read, `/${containerName}`, 'tar.gz');
+    let response = await selectel.extractArchive(read, `${containerName}`, 'tar.gz');
     expect(response.statusCode).to.equal(201);
   }).timeout(10000);
 
   it('copyFile', async () => {
-    let response = await selectel.copyFile(`/${containerName}/file.jpg`, `/${containerName}/file-copy.jpg`);
+    let response = await selectel.copyFile(`${containerName}/file.jpg`, `${containerName}/file-copy.jpg`);
     expect(response.statusCode).to.equal(201);
   });
 
   it('deleteFile', async () => {
-    let response = await selectel.deleteFile(`/${containerName}/file.jpg`);
+    let response = await selectel.deleteFile(`${containerName}/file.jpg`);
     expect(response.statusCode).to.equal(204);
   });
 
   after('delete the container', async () => {
-    await selectel.deleteFile(`/${containerName}/file-copy.jpg`);
-    await selectel.deleteFile(`/${containerName}/DS_Store`);
+    await selectel.deleteFile(`${containerName}/file-copy.jpg`);
+    await selectel.deleteFile(`${containerName}/DS_Store`);
     await selectel.deleteContainer(containerName);
   });
 });
