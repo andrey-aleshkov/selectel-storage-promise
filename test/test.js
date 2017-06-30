@@ -12,8 +12,6 @@ const usedContainerName = process.env.NODE_ENV === 'production' ? 'tests' : 'tes
 const nonexistentContainerName = 'nonexistent';
 const nonemptyContainerName = process.env.NODE_ENV === 'production' ? 'tests' : 'nonempty';
 
-// const request = sinon.mock();
-// const mock = sinon.mock(requestPromise);
 const selectel = new Selectel(request, requestPromise);
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -239,7 +237,7 @@ describe('4XX: Failed with valid credentials', function() {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-//describe('Files', function() {
+// describe('Files', function() {
 //  before('create a container', async () => {
 //    await selectel.createContainer(containerName, 'private');
 //  });
@@ -249,4 +247,4 @@ describe('4XX: Failed with valid credentials', function() {
 //    await selectel.deleteFile(`${containerName}/DS_Store`);
 //    await selectel.deleteContainer(containerName);
 //  });
-//});
+// });

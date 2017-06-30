@@ -1,0 +1,8 @@
+machine:
+  node:
+    version: 7.10.0
+dependencies:
+  pre:
+    - rm -rf ./node_modules
+  cache_directories:
+    - ~/.npm
