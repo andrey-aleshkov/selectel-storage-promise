@@ -6,3 +6,7 @@ dependencies:
     - rm -rf ./node_modules
   cache_directories:
     - ~/.npm
+test:
+  override:
+    - npm test
+    
